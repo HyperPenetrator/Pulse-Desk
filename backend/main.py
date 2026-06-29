@@ -11,6 +11,7 @@ from database import get_db, engine
 from models import Base, Facility, Staff, InventoryItem, FootfallLog
 from dependencies import RequireRole, validate_facility_scope, validate_district_scope, get_current_user
 from voice import router as voice_router
+from webhook import router as webhook_router
 
 # Ensure tables are created (especially if running in local sqlite without alembic for quick tests)
 Base.metadata.create_all(bind=engine)
@@ -18,6 +19,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Swasthya Grid API", version="1.0.0")
 
 app.include_router(voice_router)
+app.include_router(webhook_router)
 
 # Enable CORS for Next.js frontend calls
 app.add_middleware(
