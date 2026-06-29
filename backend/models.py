@@ -112,3 +112,29 @@ class Alert(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     facility = relationship("Facility", back_populates="alerts")
+
+
+class CensusReference(Base):
+    __tablename__ = 'census_reference'
+
+    district_code = Column(String, primary_key=True, index=True)
+    catchment_population = Column(Integer, default=0)
+    age_cohort_under_5 = Column(Float, default=0.0)
+    age_cohort_over_60 = Column(Float, default=0.0)
+
+
+class NFHSReference(Base):
+    __tablename__ = 'nfhs_reference'
+
+    district_code = Column(String, primary_key=True, index=True)
+    seasonal_vector_weight = Column(Float, default=0.0)
+    disease_burden_indicators = Column(String, nullable=True)
+
+
+class DataGovInReference(Base):
+    __tablename__ = 'datagovin_reference'
+
+    district_code = Column(String, primary_key=True, index=True)
+    sanctioned_staff_count = Column(Integer, default=0)
+    supply_lead_time_baseline = Column(Integer, default=0)
+
