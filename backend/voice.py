@@ -4,48 +4,12 @@ from datetime import datetime
 from typing import Optional, Any
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from sqlalchemy.orm import Session
-from google.cloud import speech
-
+from comms_client import transcribe_audio
 from database import get_db
 from dependencies import RequireRole
 from models import InventoryItem, FootfallLog, Staff, AttendanceLog
 
 router = APIRouter(prefix="/api/v1/voice", tags=["voice"])
-
-def transcribe_audio(audio_content: bytes, explicit_language: Optional[str] = None) -> dict:
-    """
-    Calls Google Cloud Speech-to-Text API to transcribe the provided audio content.
-    """
-    try:
-        client = speech.SpeechClient()
-        audio = speech.RecognitionAudio(content=audio_content)
-        
-        config = speech.RecognitionConfig(
-            encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-            language_code=explicit_language or "en-IN",
-            alternative_language_codes=["hi-IN", "ta-IN", "te-IN", "mr-IN", "en-US"] if not explicit_language else [],
-            enable_automatic_punctuation=True,
-        )
-        
-        response = client.recognize(config=config, audio=audio)
-        if not response.results:
-            return {"transcribed_text": "", "confidence_score": 0.0, "detected_language_code": explicit_language or "unknown"}
-        
-        result = response.results[0]
-        alternative = result.alternatives[0]
-        detected_lang = getattr(result, "language_code", explicit_language or "unknown")
-        
-        return {
-            "transcribed_text": alternative.transcript,
-            "confidence_score": alternative.confidence,
-            "detected_language_code": detected_lang
-        }
-    except Exception as e:
-        # If Speech-to-Text client fails (e.g. credentials not set in dev), raise exception
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Speech-to-Text API call failed: {str(e)}"
-        )
 
 def parse_number(text: str) -> Optional[int]:
     """
