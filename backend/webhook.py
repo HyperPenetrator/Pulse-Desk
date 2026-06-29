@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from database import get_db
-from comms_client import translate_text, text_to_speech
+import comms_client
 
 router = APIRouter(prefix="/webhook", tags=["webhook"])
 
@@ -57,7 +57,7 @@ async def dialogflow_webhook(request: Dict[str, Any], db: Session = Depends(get_
         # 2. Translation to English if needed
         detected_lang = language_code.split("-")[0].lower()
         if detected_lang != "en" and text_query:
-            translation_res = translate_text(text_query, target_language="en")
+            translation_res = comms_client.translate_text(text_query, target_language="en")
             english_query = translation_res["translated_text"]
             original_lang = translation_res["detected_language"]
         else:
@@ -71,7 +71,7 @@ async def dialogflow_webhook(request: Dict[str, Any], db: Session = Depends(get_
 
         # 4. Translate response back to user's language
         if original_lang != "en" and original_lang != "unknown":
-            response_translation = translate_text(advice_en, target_language=original_lang)
+            response_translation = comms_client.translate_text(advice_en, target_language=original_lang)
             final_response_text = response_translation["translated_text"]
         else:
             final_response_text = advice_en
@@ -79,7 +79,7 @@ async def dialogflow_webhook(request: Dict[str, Any], db: Session = Depends(get_
         # 5. Conditionally apply Text-to-Speech for voice channel
         audio_base64 = None
         if channel == "voice":
-            audio_bytes = text_to_speech(final_response_text, language_code=language_code)
+            audio_bytes = comms_client.text_to_speech(final_response_text, language_code=language_code)
             audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
 
         # 6. Formulate Dialogflow CX response
