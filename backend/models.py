@@ -108,6 +108,7 @@ class Alert(Base):
     id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     type = Column(String, nullable=False)  # stock-out, underperforming, surge, redistribution
     facility_id = Column(Uuid(as_uuid=True), ForeignKey('facilities.id'))
+    district_code = Column(String, nullable=True, index=True)
     status = Column(String, nullable=False)  # active, resolved
     created_at = Column(DateTime, default=datetime.utcnow)
 

@@ -1,14 +1,18 @@
 import jwt
+import math
+import requests
+import os
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from uuid import UUID
 from datetime import datetime, timedelta
 from typing import Optional
+from pydantic import BaseModel
 
 from config import settings
 from database import get_db, engine
-from models import Base, Facility, Staff, InventoryItem, FootfallLog
+from models import Base, Facility, Staff, InventoryItem, FootfallLog, PatientSession, Dispatch, Alert
 from dependencies import RequireRole, validate_facility_scope, validate_district_scope, get_current_user
 from voice import router as voice_router
 from webhook import router as webhook_router
@@ -52,6 +56,255 @@ def get_facilities(db: Session = Depends(get_db)):
         }
         for f in facilities
     ]
+
+
+class IntakePayload(BaseModel):
+    symptom: str
+    lat: float
+    lng: float
+    location_name: Optional[str] = None
+
+
+# Triage severity classification (keyword lookup, structured as swappable function)
+# Note: This can later call the Dialogflow CX intent classifier from Stage 4.
+def classify_severity(symptom: str) -> str:
+    emergency_keywords = [
+        "chest pain", "breathing", "unconscious", "heart attack", "stroke",
+        "bleeding", "accident", "emergency", "fracture", "severe", "drowning",
+        "choking", "poison", "burn", "suicide", "seizure", "paralysis",
+        "breathing difficulty", "head injury", "breathlessness", "heart pain"
+    ]
+    symptom_lower = symptom.lower()
+    for keyword in emergency_keywords:
+        if keyword in symptom_lower:
+            return "emergency"
+    return "non-emergency"
+
+
+def get_distance_matrix(origin_lat: float, origin_lng: float, destinations: list[tuple[float, float, str]], api_key: Optional[str] = None) -> list[dict]:
+    """
+    Computes distance matrix. If api_key is available, calls Google Maps Distance Matrix API.
+    Otherwise, simulates responses based on straight-line distance and a speed of 40 km/h.
+    destinations is a list of tuples: (lat, lng, facility_name)
+    """
+    results = []
+    if api_key:
+        dest_strings = "|".join([f"{d[0]},{d[1]}" for d in destinations])
+        url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={origin_lat},{origin_lng}&destinations={dest_strings}&key={api_key}"
+        try:
+            resp = requests.get(url, timeout=5)
+            if resp.status_code == 200:
+                data = resp.json()
+                if data.get("status") == "OK" and "rows" in data and len(data["rows"]) > 0:
+                    elements = data["rows"][0]["elements"]
+                    for idx, elem in enumerate(elements):
+                        if elem.get("status") == "OK":
+                            dist_meters = elem["distance"]["value"]
+                            duration_seconds = elem["duration"]["value"]
+                            results.append({
+                                "facility_name": destinations[idx][2],
+                                "distance_meters": dist_meters,
+                                "duration_seconds": duration_seconds,
+                                "eta_minutes": math.ceil(duration_seconds / 60)
+                            })
+                            continue
+        except Exception:
+            pass
+            
+    # Mock / simulation fallback
+    if not results:
+        # Earth radius in km
+        R = 6371.0
+        for lat, lng, name in destinations:
+            # Calculate distance using haversine formula
+            dlat = math.radians(lat - origin_lat)
+            dlng = math.radians(lng - origin_lng)
+            a = math.sin(dlat / 2)**2 + math.cos(math.radians(origin_lat)) * math.cos(math.radians(lat)) * math.sin(dlng / 2)**2
+            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+            distance_km = R * c
+            
+            # Assume 40 km/h average speed in traffic
+            speed_km_min = 40.0 / 60.0
+            eta_mins = max(1, math.ceil(distance_km / speed_km_min))
+            results.append({
+                "facility_name": name,
+                "distance_meters": int(distance_km * 1000),
+                "duration_seconds": int(eta_mins * 60),
+                "eta_minutes": eta_mins
+            })
+            
+    return results
+
+
+def mirror_alert_to_firestore(alert_id: str, alert_type: str, status: str, facility_id: Optional[str] = None, district_code: Optional[str] = None):
+    try:
+        if settings.FIREBASE_PROJECT_ID:
+            from google.cloud import firestore
+            fs_client = firestore.Client(project=settings.FIREBASE_PROJECT_ID)
+            doc_ref = fs_client.collection("alerts").document(alert_id)
+            doc_ref.set({
+                "id": alert_id,
+                "type": alert_type,
+                "facility_id": facility_id,
+                "district_code": district_code,
+                "status": status,
+                "created_at": datetime.utcnow().isoformat()
+            })
+            print(f"Mirrored alert {alert_id} to Firestore.")
+        else:
+            print(f"[Simulated Firestore] Alert {alert_id} mirrored: {alert_type}, facility_id={facility_id}, district_code={district_code}")
+    except Exception as e:
+        print(f"Error mirroring alert to Firestore: {e}")
+
+
+def mirror_dispatch_to_firestore(dispatch_id: str, patient_session_id: str, facility_id: str, status: str, lat: float, lng: float, eta_mins: int):
+    try:
+        if settings.FIREBASE_PROJECT_ID:
+            from google.cloud import firestore
+            fs_client = firestore.Client(project=settings.FIREBASE_PROJECT_ID)
+            doc_ref = fs_client.collection("dispatches").document(dispatch_id)
+            doc_ref.set({
+                "id": dispatch_id,
+                "patient_session_id": patient_session_id,
+                "facility_id": facility_id,
+                "status": status,
+                "lat": lat,
+                "lng": lng,
+                "eta_minutes": eta_mins,
+                "created_at": datetime.utcnow().isoformat()
+            })
+            print(f"Mirrored dispatch {dispatch_id} to Firestore.")
+        else:
+            print(f"[Simulated Firestore] Dispatch {dispatch_id} mirrored: facility_id={facility_id}, eta_mins={eta_mins}")
+    except Exception as e:
+        print(f"Error mirroring dispatch to Firestore: {e}")
+
+
+@app.post("/api/v1/intake")
+def post_intake(payload: IntakePayload, db: Session = Depends(get_db)):
+    severity = classify_severity(payload.symptom)
+    
+    # Save Patient Session
+    patient_session = PatientSession(
+        channel="web",
+        raw_text=payload.symptom,
+        language_code="en",
+        confidence_score=1.0,
+        severity=severity,
+        created_at=datetime.utcnow()
+    )
+    db.add(patient_session)
+    db.flush()  # Populates patient_session.id
+    
+    if severity == "emergency":
+        # Check facilities with available beds > 0
+        capable_facilities = db.query(Facility).filter(Facility.available_beds > 0).all()
+        
+        # Configurable radius in meters (50 km)
+        CONFIGURABLE_RADIUS_METERS = 50000.0
+        
+        # We also query all facilities to find nearest overall for escalation scope if needed
+        all_facilities = db.query(Facility).all()
+        
+        selected_facility = None
+        eta_minutes = None
+        
+        if capable_facilities:
+            destinations = [(f.lat or 0.0, f.lng or 0.0, f.name) for f in capable_facilities]
+            # Use GOOGLE_MAPS_API_KEY from environment if available
+            maps_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+            distances = get_distance_matrix(payload.lat, payload.lng, destinations, api_key=maps_key)
+            
+            # Match back to facility and filter by radius
+            within_radius_facilities = []
+            for idx, dist_info in enumerate(distances):
+                facility = capable_facilities[idx]
+                if dist_info["distance_meters"] <= CONFIGURABLE_RADIUS_METERS:
+                    within_radius_facilities.append((facility, dist_info))
+            
+            if within_radius_facilities:
+                # Sort by distance
+                within_radius_facilities.sort(key=lambda x: x[1]["distance_meters"])
+                selected_facility, dist_info = within_radius_facilities[0]
+                eta_minutes = dist_info["eta_minutes"]
+                
+        if selected_facility:
+            # Create Dispatch
+            eta_time = datetime.utcnow() + timedelta(minutes=eta_minutes)
+            dispatch = Dispatch(
+                patient_session_id=patient_session.id,
+                facility_id=selected_facility.id,
+                status="pending",
+                lat=payload.lat,
+                lng=payload.lng,
+                eta=eta_time
+            )
+            db.add(dispatch)
+            
+            # Create Alert of type surge
+            alert = Alert(
+                type="surge",
+                facility_id=selected_facility.id,
+                status="active",
+                created_at=datetime.utcnow()
+            )
+            db.add(alert)
+            db.commit()
+            
+            # Mirror to Firestore
+            mirror_dispatch_to_firestore(str(dispatch.id), str(patient_session.id), str(selected_facility.id), "pending", payload.lat, payload.lng, eta_minutes)
+            mirror_alert_to_firestore(str(alert.id), "surge", "active", facility_id=str(selected_facility.id))
+            
+            return {
+                "status": "dispatched",
+                "severity": severity,
+                "facility_name": selected_facility.name,
+                "eta": eta_minutes
+            }
+        else:
+            # No facility with capacity within radius -> Escalate to district-admin scope
+            # Find closest facility overall to determine the district code
+            closest_district = "UNKNOWN"
+            if all_facilities:
+                destinations = [(f.lat or 0.0, f.lng or 0.0, f.name) for f in all_facilities]
+                maps_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+                all_distances = get_distance_matrix(payload.lat, payload.lng, destinations, api_key=maps_key)
+                
+                # Sort overall facilities by distance
+                sorted_overall = sorted(enumerate(all_distances), key=lambda x: x[1]["distance_meters"])
+                closest_index = sorted_overall[0][0]
+                closest_district = all_facilities[closest_index].district_code
+            
+            # Create Alert escalated directly to district-admin scope (facility_id = None, district_code set)
+            alert = Alert(
+                type="surge",
+                facility_id=None,
+                district_code=closest_district,
+                status="active",
+                created_at=datetime.utcnow()
+            )
+            db.add(alert)
+            db.commit()
+            
+            # Mirror to Firestore
+            mirror_alert_to_firestore(str(alert.id), "surge", "active", facility_id=None, district_code=closest_district)
+            
+            return {
+                "status": "escalated",
+                "severity": severity,
+                "message": "No nearby facility with capacity. Escalated to district-admin.",
+                "district_code": closest_district
+            }
+            
+    else:
+        # non-emergency
+        db.commit()
+        return {
+            "status": "triage",
+            "severity": severity,
+            "message": "Non-emergency detected. Please consult your nearest Primary Health Centre (PHC)."
+        }
+
 
 # Helper route for mock login to generate a JWT locally when settings.USE_MOCK_AUTH is True
 @app.post("/api/v1/auth/mock-login")
