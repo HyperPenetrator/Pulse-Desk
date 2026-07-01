@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "swasthya-grid-staging",
+    "staging": "swasthya-grid-staging",
+    "production": "swasthya-grid-production"
+  }
+}

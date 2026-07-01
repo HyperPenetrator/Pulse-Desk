@@ -2,6 +2,7 @@ import jwt
 import math
 import requests
 import os
+import redis
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -12,7 +13,7 @@ from pydantic import BaseModel
 
 from config import settings
 from database import get_db, engine
-from models import Base, Facility, Staff, InventoryItem, FootfallLog, PatientSession, Dispatch, Alert
+from models import Base, Facility, Staff, InventoryItem, FootfallLog, PatientSession, Dispatch, Alert, AttendanceLog
 from dependencies import RequireRole, validate_facility_scope, validate_district_scope, get_current_user
 from voice import router as voice_router
 from webhook import router as webhook_router
@@ -21,6 +22,8 @@ from reference_service import get_census_data
 
 # Ensure tables are created (especially if running in local sqlite without alembic for quick tests)
 Base.metadata.create_all(bind=engine)
+
+redis_client = redis.Redis(host=os.getenv('REDIS_HOST', 'localhost'), port=6379, decode_responses=True)
 
 app = FastAPI(title="Swasthya Grid API", version="1.0.0")
 
@@ -347,7 +350,7 @@ def mock_login(payload: dict):
 # 1. Receptionist Data Endpoint (Facility-scoped)
 @app.get(
     "/api/v1/receptionist/data/{facility_id}",
-    dependencies=[Depends(RequireRole(["receptionist", "district_admin"])), Depends(validate_facility_scope)]
+    dependencies=[Depends(RequireRole(["receptionist", "district_admin", "phc_incharge"])), Depends(validate_facility_scope)]
 )
 def get_receptionist_dashboard_data(facility_id: UUID, db: Session = Depends(get_db)):
     facility = db.query(Facility).filter(Facility.id == facility_id).first()
@@ -357,6 +360,32 @@ def get_receptionist_dashboard_data(facility_id: UUID, db: Session = Depends(get
     staff_count = db.query(Staff).filter(Staff.facility_id == facility_id).count()
     inventory_items = db.query(InventoryItem).filter(InventoryItem.facility_id == facility_id).all()
     footfall_logs = db.query(FootfallLog).filter(FootfallLog.facility_id == facility_id).all()
+    
+    # Query dispatches for this facility
+    dispatches = db.query(Dispatch).filter(Dispatch.facility_id == facility_id).all()
+    
+    active_dispatches = [
+        {
+            "id": str(d.id),
+            "patient_session_id": str(d.patient_session_id),
+            "status": d.status,
+            "lat": d.lat,
+            "lng": d.lng,
+            "eta": d.eta.isoformat() if d.eta else None,
+            "symptom": d.patient_session.raw_text if d.patient_session else ""
+        }
+        for d in dispatches if d.status in ["pending", "enroute"]
+    ]
+    
+    walk_ins = [
+        {
+            "id": str(d.patient_session.id),
+            "symptoms": d.patient_session.raw_text,
+            "severity": d.patient_session.severity,
+            "created_at": d.patient_session.created_at.isoformat()
+        }
+        for d in dispatches if d.patient_session and d.patient_session.channel == "walk-in"
+    ]
     
     return {
         "facility_name": facility.name,
@@ -371,12 +400,23 @@ def get_receptionist_dashboard_data(facility_id: UUID, db: Session = Depends(get
                 "current_stock": item.current_stock
             }
             for item in inventory_items
-        ]
+        ],
+        "active_dispatches": active_dispatches,
+        "walk_ins": walk_ins
     }
 
 
+
 # 2. PHC In-charge Data Endpoint (Facility-scoped, requires PHC In-charge or District Admin)
-def calculate_fsi_for_facility(facility: Facility, db: Session) -> float:
+def calculate_fsi_for_facility(facility: Facility, db: Session) -> int:
+    cache_key = f"fsi:facility:{facility.id}"
+    try:
+        cached = redis_client.get(cache_key)
+        if cached is not None:
+            return int(cached)
+    except Exception as e:
+        print(f"Redis cache read error: {e}")
+
     census_data = get_census_data(facility.district_code, db)
     catchment_pop = census_data["catchment_population"] if (census_data and census_data["catchment_population"] > 0) else 1
     beds_baseline = facility.sanctioned_beds if facility.sanctioned_beds > 0 else 1
@@ -384,7 +424,15 @@ def calculate_fsi_for_facility(facility: Facility, db: Session) -> float:
     footfall = db.query(FootfallLog).filter(FootfallLog.facility_id == facility.id).order_by(FootfallLog.date.desc()).first()
     footfall_count = footfall.count if footfall else 0
     
-    return round(float(footfall_count) / (catchment_pop * beds_baseline), 6)
+    raw_fsi = float(footfall_count) / (catchment_pop * beds_baseline)
+    fsi_int = int(raw_fsi * 1000000)
+    
+    try:
+        redis_client.setex(cache_key, 60, str(fsi_int))
+    except Exception as e:
+        print(f"Redis cache write error: {e}")
+        
+    return fsi_int
 
 @app.get(
     "/api/v1/phc-incharge/data/{facility_id}",
@@ -469,7 +517,7 @@ def get_district_fsi(district_code: str, db: Session = Depends(get_db)):
             "fsi_value": fsi_val
         })
         
-    avg_fsi = round(total_fsi / len(facilities), 6) if facilities else 0.0
+    avg_fsi = int(total_fsi / len(facilities)) if facilities else 0
     
     return {
         "district_code": district_code,
@@ -503,4 +551,455 @@ def get_district_admin_dashboard_data(district_code: str, db: Session = Depends(
         "district_code": district_code,
         "total_facilities": len(facilities),
         "facilities": results
+    }
+
+
+class DispatchStatusUpdatePayload(BaseModel):
+    status: str
+
+@app.patch(
+    "/api/v1/dispatch/{id}",
+    dependencies=[Depends(RequireRole(["receptionist", "district_admin", "phc_incharge"]))]
+)
+def patch_dispatch(id: UUID, payload: DispatchStatusUpdatePayload, db: Session = Depends(get_db), claims: dict = Depends(get_current_user)):
+    dispatch = db.query(Dispatch).filter(Dispatch.id == id).first()
+    if not dispatch:
+        raise HTTPException(status_code=404, detail="Dispatch not found")
+    
+    # Enforce facility scoping for receptionists/phc_incharges
+    role = claims.get("role")
+    if role in ["receptionist", "phc_incharge"]:
+        user_facility_id = claims.get("facility_id")
+        if not user_facility_id or str(user_facility_id) != str(dispatch.facility_id):
+            raise HTTPException(status_code=403, detail="Access denied: user is not scoped to this facility")
+            
+    # Enforce district scoping for district admins
+    elif role == "district_admin":
+        user_district_code = claims.get("district_code")
+        facility = db.query(Facility).filter(Facility.id == dispatch.facility_id).first()
+        if not facility or facility.district_code != user_district_code:
+            raise HTTPException(status_code=403, detail="Access denied: facility is outside district scope")
+            
+    if payload.status not in ["pending", "enroute", "arrived"]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+        
+    dispatch.status = payload.status
+    db.commit()
+    
+    # Mirror to firestore
+    mirror_dispatch_to_firestore(str(dispatch.id), str(dispatch.patient_session_id), str(dispatch.facility_id), dispatch.status, dispatch.lat or 0.0, dispatch.lng or 0.0, 0)
+    
+    return {
+        "status": "success",
+        "dispatch_id": str(dispatch.id),
+        "new_status": dispatch.status
+    }
+
+
+class WalkInPayload(BaseModel):
+    patient_name: str
+    age: int
+    gender: str
+    symptoms: str
+
+@app.post(
+    "/api/v1/receptionist/walk-in/{facility_id}",
+    dependencies=[Depends(RequireRole(["receptionist", "district_admin"])), Depends(validate_facility_scope)]
+)
+def post_walk_in(facility_id: UUID, payload: WalkInPayload, db: Session = Depends(get_db)):
+    formatted_text = f"Name: {payload.patient_name}, Age: {payload.age}, Gender: {payload.gender}, Symptoms: {payload.symptoms}"
+    severity = classify_severity(payload.symptoms)
+    
+    patient_session = PatientSession(
+        channel="walk-in",
+        raw_text=formatted_text,
+        language_code="en",
+        confidence_score=1.0,
+        severity=severity,
+        created_at=datetime.utcnow()
+    )
+    db.add(patient_session)
+    db.flush()
+    
+    dispatch = Dispatch(
+        patient_session_id=patient_session.id,
+        facility_id=facility_id,
+        status="arrived",
+        lat=0.0,
+        lng=0.0,
+        eta=datetime.utcnow()
+    )
+    db.add(dispatch)
+    
+    # Increment footfall count
+    today = datetime.utcnow().date()
+    footfall = db.query(FootfallLog).filter(
+        FootfallLog.facility_id == facility_id,
+        FootfallLog.date == today
+    ).first()
+    if not footfall:
+        footfall = FootfallLog(
+            facility_id=facility_id,
+            date=today,
+            count=1
+        )
+        db.add(footfall)
+    else:
+        footfall.count += 1
+        
+    db.commit()
+    
+    return {
+        "status": "success",
+        "patient_session_id": str(patient_session.id),
+        "severity": severity
+    }
+
+
+# PHC In-charge specific endpoints
+@app.get(
+    "/api/v1/inventory/{facility_id}",
+    dependencies=[Depends(RequireRole(["phc_incharge", "district_admin", "receptionist"])), Depends(validate_facility_scope)]
+)
+def get_inventory(facility_id: UUID, db: Session = Depends(get_db)):
+    inventory_items = db.query(InventoryItem).filter(InventoryItem.facility_id == facility_id).all()
+    return [
+        {
+            "id": str(item.id),
+            "medicine_name": item.medicine_name,
+            "current_stock": item.current_stock,
+            "avg_daily_burn_rate": item.avg_daily_burn_rate,
+            "drp_value": item.drp_value
+        }
+        for item in inventory_items
+    ]
+
+
+@app.get(
+    "/api/v1/attendance/{facility_id}",
+    dependencies=[Depends(RequireRole(["phc_incharge", "district_admin"])), Depends(validate_facility_scope)]
+)
+def get_attendance(facility_id: UUID, db: Session = Depends(get_db)):
+    facility = db.query(Facility).filter(Facility.id == facility_id).first()
+    if not facility:
+        raise HTTPException(status_code=404, detail="Facility not found")
+    
+    staff_members = db.query(Staff).filter(Staff.facility_id == facility_id).all()
+    today = datetime.utcnow().date()
+    
+    attendance_records = []
+    present_count = 0
+    
+    for member in staff_members:
+        log = db.query(AttendanceLog).filter(
+            AttendanceLog.staff_id == member.id,
+            AttendanceLog.date == today
+        ).first()
+        
+        status = log.status if log else "Absent"
+        if status == "Present":
+            present_count += 1
+            
+        attendance_records.append({
+            "staff_id": str(member.id),
+            "name": member.name,
+            "role": member.role,
+            "status": status
+        })
+        
+    return {
+        "facility_id": str(facility_id),
+        "sanctioned_staff": facility.sanctioned_staff or 0,
+        "present_count": present_count,
+        "attendance": attendance_records
+    }
+
+
+class RedistributionPayload(BaseModel):
+    facility_id: UUID
+    reason: str
+
+@app.post(
+    "/api/v1/redistribution",
+    dependencies=[Depends(RequireRole(["phc_incharge", "district_admin"]))]
+)
+def request_redistribution(payload: RedistributionPayload, db: Session = Depends(get_db), claims: dict = Depends(get_current_user)):
+    role = claims.get("role")
+    if role == "phc_incharge":
+        user_facility_id = claims.get("facility_id")
+        if not user_facility_id or str(user_facility_id) != str(payload.facility_id):
+            raise HTTPException(status_code=403, detail="Access denied: user is not scoped to this facility")
+            
+    facility = db.query(Facility).filter(Facility.id == payload.facility_id).first()
+    if not facility:
+        raise HTTPException(status_code=404, detail="Facility not found")
+        
+    alert = Alert(
+        type="redistribution",
+        facility_id=payload.facility_id,
+        district_code=facility.district_code,
+        status="active",
+        description=payload.reason,
+        created_at=datetime.utcnow()
+    )
+    db.add(alert)
+    db.commit()
+    
+    mirror_alert_to_firestore(str(alert.id), "redistribution", "active", facility_id=str(payload.facility_id), district_code=facility.district_code)
+    
+    return {
+        "status": "success",
+        "alert_id": str(alert.id)
+    }
+
+
+# ── District Admin: List redistribution requests ──────────────────────────────
+@app.get(
+    "/api/v1/district-admin/redistribution-requests",
+    dependencies=[Depends(RequireRole(["district_admin"]))]
+)
+def list_redistribution_requests(db: Session = Depends(get_db), claims: dict = Depends(get_current_user)):
+    district_code = claims.get("district_code")
+    if not district_code:
+        raise HTTPException(status_code=403, detail="district_code not found in token")
+
+    alerts = db.query(Alert).filter(
+        Alert.type == "redistribution",
+        Alert.district_code == district_code
+    ).order_by(Alert.created_at.desc()).all()
+
+    return [
+        {
+            "alert_id": str(a.id),
+            "facility_id": str(a.facility_id) if a.facility_id else None,
+            "facility_name": a.facility.name if a.facility else "Unknown",
+            "status": a.status,
+            "description": a.description,
+            "created_at": a.created_at.isoformat() if a.created_at else None,
+        }
+        for a in alerts
+    ]
+
+
+# ── District Admin: Approve / Reject redistribution request ──────────────────
+class RedistributionActionPayload(BaseModel):
+    action: str  # "approved" | "rejected"
+
+@app.patch(
+    "/api/v1/redistribution/{alert_id}",
+    dependencies=[Depends(RequireRole(["district_admin"]))]
+)
+def update_redistribution_status(
+    alert_id: UUID,
+    payload: RedistributionActionPayload,
+    db: Session = Depends(get_db),
+    claims: dict = Depends(get_current_user)
+):
+    district_code = claims.get("district_code")
+    alert = db.query(Alert).filter(Alert.id == alert_id, Alert.type == "redistribution").first()
+    if not alert:
+        raise HTTPException(status_code=404, detail="Redistribution request not found")
+
+    # Enforce district scoping
+    if alert.district_code != district_code:
+        raise HTTPException(status_code=403, detail="Access denied: request is outside your district scope")
+
+    if payload.action not in ["approved", "rejected"]:
+        raise HTTPException(status_code=400, detail="action must be 'approved' or 'rejected'")
+
+    alert.status = payload.action
+    db.commit()
+
+    # Notify via Firestore mirror
+    mirror_alert_to_firestore(
+        str(alert.id), "redistribution", payload.action,
+        facility_id=str(alert.facility_id) if alert.facility_id else None,
+        district_code=district_code
+    )
+
+    return {
+        "status": "success",
+        "alert_id": str(alert.id),
+        "new_status": alert.status
+    }
+
+
+# ── District Admin: Underperforming Facilities ────────────────────────────────
+FSI_HIGH_THRESHOLD = 0.0005   # flags facilities with FSI above this
+ATTENDANCE_LOW_THRESHOLD = 0.6  # flags if present/sanctioned < 60%
+
+@app.get(
+    "/api/v1/district-admin/underperforming",
+    dependencies=[Depends(RequireRole(["district_admin"])), Depends(validate_district_scope)]
+)
+def get_underperforming_facilities(district_code: str, db: Session = Depends(get_db)):
+    facilities = db.query(Facility).filter(Facility.district_code == district_code).all()
+    today = datetime.utcnow().date()
+    flagged = []
+
+    for f in facilities:
+        triggers = []
+
+        # FSI check
+        fsi_val = calculate_fsi_for_facility(f, db)
+        if fsi_val > FSI_HIGH_THRESHOLD:
+            triggers.append({
+                "metric": "FSI",
+                "value": fsi_val,
+                "threshold": FSI_HIGH_THRESHOLD,
+                "detail": f"FSI {fsi_val:.6f} exceeds threshold {FSI_HIGH_THRESHOLD}"
+            })
+
+        # Attendance deviation check
+        staff_list = db.query(Staff).filter(Staff.facility_id == f.id).all()
+        sanctioned = f.sanctioned_staff or 1
+        present = 0
+        for member in staff_list:
+            log = db.query(AttendanceLog).filter(
+                AttendanceLog.staff_id == member.id,
+                AttendanceLog.date == today
+            ).first()
+            if log and log.status == "Present":
+                present += 1
+
+        attendance_ratio = present / sanctioned if sanctioned else 1.0
+        if attendance_ratio < ATTENDANCE_LOW_THRESHOLD:
+            triggers.append({
+                "metric": "Attendance",
+                "value": round(attendance_ratio, 3),
+                "threshold": ATTENDANCE_LOW_THRESHOLD,
+                "detail": f"Only {present}/{sanctioned} staff present ({attendance_ratio*100:.1f}% < {ATTENDANCE_LOW_THRESHOLD*100:.0f}%)"
+            })
+
+        if triggers:
+            flagged.append({
+                "facility_id": str(f.id),
+                "facility_name": f.name,
+                "facility_type": f.type,
+                "fsi_value": fsi_val,
+                "triggers": triggers
+            })
+
+    return {"district_code": district_code, "underperforming": flagged}
+
+
+# ── District Admin: Attendance Deviation Report ───────────────────────────────
+@app.get(
+    "/api/v1/district-admin/attendance-deviation",
+    dependencies=[Depends(RequireRole(["district_admin"])), Depends(validate_district_scope)]
+)
+def get_district_attendance_deviation(district_code: str, db: Session = Depends(get_db)):
+    facilities = db.query(Facility).filter(Facility.district_code == district_code).all()
+    today = datetime.utcnow().date()
+    report = []
+
+    for f in facilities:
+        staff_list = db.query(Staff).filter(Staff.facility_id == f.id).all()
+        sanctioned = f.sanctioned_staff or 0
+        present = 0
+        for member in staff_list:
+            log = db.query(AttendanceLog).filter(
+                AttendanceLog.staff_id == member.id,
+                AttendanceLog.date == today
+            ).first()
+            if log and log.status == "Present":
+                present += 1
+
+        deviation = sanctioned - present
+        report.append({
+            "facility_id": str(f.id),
+            "facility_name": f.name,
+            "facility_type": f.type,
+            "sanctioned_staff": sanctioned,
+            "present_today": present,
+            "deviation": deviation,
+            "attendance_pct": round((present / sanctioned * 100) if sanctioned else 0, 1)
+        })
+
+    return {"district_code": district_code, "date": str(today), "facilities": report}
+
+
+# ── District Admin: Fleet / Dispatch Status ───────────────────────────────────
+@app.get(
+    "/api/v1/district-admin/fleet",
+    dependencies=[Depends(RequireRole(["district_admin"])), Depends(validate_district_scope)]
+)
+def get_district_fleet(district_code: str, db: Session = Depends(get_db)):
+    facilities = db.query(Facility).filter(Facility.district_code == district_code).all()
+    facility_ids = [f.id for f in facilities]
+    facility_map = {str(f.id): f.name for f in facilities}
+
+    dispatches = db.query(Dispatch).filter(Dispatch.facility_id.in_(facility_ids)).order_by(Dispatch.eta.desc()).all()
+
+    result = {"pending": [], "enroute": [], "arrived": []}
+    for d in dispatches:
+        item = {
+            "dispatch_id": str(d.id),
+            "facility_name": facility_map.get(str(d.facility_id), "Unknown"),
+            "facility_id": str(d.facility_id),
+            "status": d.status,
+            "eta": d.eta.isoformat() if d.eta else None,
+            "symptom": d.patient_session.raw_text if d.patient_session else ""
+        }
+        if d.status in result:
+            result[d.status].append(item)
+
+    result["total"] = len(dispatches)
+    result["district_code"] = district_code
+    return result
+
+
+# ── District Admin: Benchmark Comparison View ─────────────────────────────────
+from reference_service import get_nfhs_data, get_datagovin_data
+
+@app.get(
+    "/api/v1/district-admin/benchmarks",
+    dependencies=[Depends(RequireRole(["district_admin"])), Depends(validate_district_scope)]
+)
+def get_district_benchmarks(district_code: str, db: Session = Depends(get_db)):
+    facilities = db.query(Facility).filter(Facility.district_code == district_code).all()
+    today = datetime.utcnow().date()
+
+    census_data = get_census_data(district_code, db)
+    nfhs_data = get_nfhs_data(district_code, db)
+    datagovin_data = get_datagovin_data(district_code, db)
+
+    # Aggregate live metrics
+    total_sanctioned_staff = sum(f.sanctioned_staff or 0 for f in facilities)
+    total_present = 0
+    for f in facilities:
+        for member in db.query(Staff).filter(Staff.facility_id == f.id).all():
+            log = db.query(AttendanceLog).filter(
+                AttendanceLog.staff_id == member.id,
+                AttendanceLog.date == today
+            ).first()
+            if log and log.status == "Present":
+                total_present += 1
+
+    avg_fsi = 0.0
+    for f in facilities:
+        avg_fsi += calculate_fsi_for_facility(f, db)
+    avg_fsi = round(avg_fsi / len(facilities), 6) if facilities else 0.0
+
+    return {
+        "district_code": district_code,
+        "total_facilities": len(facilities),
+        "live_metrics": {
+            "avg_fsi": avg_fsi,
+            "total_sanctioned_staff": total_sanctioned_staff,
+            "total_staff_present_today": total_present,
+            "attendance_pct": round((total_present / total_sanctioned_staff * 100) if total_sanctioned_staff else 0, 1)
+        },
+        "census_reference": census_data or {},
+        "nfhs_reference": nfhs_data or {},
+        "datagovin_reference": datagovin_data or {},
+        "comparison": {
+            "staff_vs_benchmark": {
+                "actual": total_sanctioned_staff,
+                "benchmark": (datagovin_data or {}).get("sanctioned_staff_count", 0),
+                "gap": total_sanctioned_staff - (datagovin_data or {}).get("sanctioned_staff_count", 0)
+            },
+            "seasonal_risk_weight": (nfhs_data or {}).get("seasonal_vector_weight", 1.0),
+            "catchment_population": (census_data or {}).get("catchment_population", 0)
+        }
     }

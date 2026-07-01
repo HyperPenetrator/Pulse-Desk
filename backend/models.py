@@ -110,6 +110,7 @@ class Alert(Base):
     facility_id = Column(Uuid(as_uuid=True), ForeignKey('facilities.id'))
     district_code = Column(String, nullable=True, index=True)
     status = Column(String, nullable=False)  # active, resolved
+    description = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     facility = relationship("Facility", back_populates="alerts")

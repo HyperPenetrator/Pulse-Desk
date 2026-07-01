@@ -77,10 +77,8 @@ def run_seed():
     # Inventory items for each facility
     for facility in facilities:
         for med in medicines:
-            # Add some randomness to current stock
-            current_stock = int(med[3] + random.randint(-20, 50))
-            if current_stock < 0:
-                current_stock = 0
+            # Start with stock exactly at DRP to represent a clean database waiting for live data
+            current_stock = int(med[3])
                 
             item = InventoryItem(
                 facility_id=facility.id,
@@ -95,21 +93,50 @@ def run_seed():
     session.commit()
     print("Created inventory items.")
     
-    # A week of footfall logs for each facility
+    # Footfall logs omitted for clean live data start
     today = datetime.now().date()
-    for facility in facilities:
-        for i in range(7):
-            log_date = today - timedelta(days=i)
-            log = FootfallLog(
-                facility_id=facility.id,
-                date=log_date,
-                count=random.randint(50, 200)
-            )
-            session.add(log)
-            
+    print("Skipped footfall logs for live data mode.")
+
+    # Attendance logs omitted for clean live data start
+    print("Skipped attendance logs for live data mode.")
+
+    # ── Reference tables: Census, NFHS, data.gov.in ──────────────────────────
+    from models import CensusReference, NFHSReference, DataGovInReference
+
+    reference_rows = {
+        "KA-BNG": {
+            "census": {"catchment_population": 250000, "age_cohort_under_5": 0.12, "age_cohort_over_60": 0.09},
+            "nfhs":   {"seasonal_vector_weight": 1.15, "disease_burden_indicators": "malaria,dengue"},
+            "datagovin": {"sanctioned_staff_count": 45, "supply_lead_time_baseline": 7},
+        },
+        "MH-MUM": {
+            "census": {"catchment_population": 310000, "age_cohort_under_5": 0.10, "age_cohort_over_60": 0.11},
+            "nfhs":   {"seasonal_vector_weight": 1.20, "disease_burden_indicators": "tuberculosis,leptospirosis"},
+            "datagovin": {"sanctioned_staff_count": 55, "supply_lead_time_baseline": 5},
+        },
+    }
+
+    for dc, data in reference_rows.items():
+        # Upsert Census
+        existing_census = session.query(CensusReference).filter(CensusReference.district_code == dc).first()
+        if not existing_census:
+            session.add(CensusReference(district_code=dc, **data["census"]))
+        # Upsert NFHS
+        existing_nfhs = session.query(NFHSReference).filter(NFHSReference.district_code == dc).first()
+        if not existing_nfhs:
+            session.add(NFHSReference(district_code=dc, **data["nfhs"]))
+        # Upsert DataGovIn
+        existing_dg = session.query(DataGovInReference).filter(DataGovInReference.district_code == dc).first()
+        if not existing_dg:
+            session.add(DataGovInReference(district_code=dc, **data["datagovin"]))
+
     session.commit()
-    print("Created footfall logs for the last 7 days.")
-    
+    print("Created reference data rows (Census, NFHS, data.gov.in).")
+
+    # ── Seed one active redistribution alert (Stage 8 cross-over) ─────────────
+    # Omitted for clean live data start.
+    pass
+
     print("Database seeding completed successfully.")
 
 if __name__ == '__main__':

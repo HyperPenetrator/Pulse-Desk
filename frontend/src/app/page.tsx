@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 export default function Home() {
   const [symptom, setSymptom] = useState('');
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [address, setAddress] = useState('');
@@ -79,6 +80,7 @@ export default function Home() {
     }
 
     setLoading(true);
+    setFormSubmitted(true);
 
     try {
       const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -110,7 +112,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-black">
+    <div className="min-h-screen bg-surface text-text-primary flex flex-col font-sans selection:bg-brand-primary/20">
       {/* Decorative top gradient */}
       <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-emerald-950/20 via-transparent to-transparent pointer-events-none" />
 
@@ -124,7 +126,7 @@ export default function Home() {
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-              Swasthya Grid
+              PulseDesk
             </h1>
             <p className="text-[10px] text-slate-400 uppercase tracking-widest -mt-0.5">Emergency Dispatch</p>
           </div>
@@ -135,13 +137,19 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="relative flex-1 w-full max-w-5xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-12 gap-8 items-start z-10">
+      <main className={`relative flex-1 w-full mx-auto px-6 py-8 z-10 transition duration-700 ease-in-out ${
+        formSubmitted 
+          ? 'max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-8 items-start' 
+          : 'max-w-2xl flex flex-col items-center'
+      }`}>
         
         {/* Form Column */}
-        <section className="md:col-span-7 bg-slate-900/40 backdrop-blur-md border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-2xl">
-          <h2 className="text-2xl font-bold tracking-tight mb-2 text-white">Patient Intake & Triage</h2>
-          <p className="text-slate-400 text-sm mb-6">
-            Describe your symptoms. If classified as an emergency, Swasthya Grid will dispatch the nearest ambulance and find an available hospital bed.
+        <section className={`bg-glass-bg backdrop-blur-md border border-glass-border rounded-3xl p-6 md:p-8 shadow-glass-dark z-20 transition duration-700 ${
+          formSubmitted ? 'md:col-span-7 w-full' : 'w-full'
+        }`}>
+          <h2 className="text-2xl font-bold tracking-tight mb-2 text-text-primary">Patient Intake & Triage</h2>
+          <p className="text-text-muted text-sm mb-6">
+            Describe your symptoms. If classified as an emergency, PulseDesk will dispatch the nearest ambulance and find an available hospital bed.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -315,19 +323,22 @@ export default function Home() {
           </form>
         </section>
 
-        {/* Results Column */}
-        <section className="md:col-span-5 bg-slate-900/20 border border-slate-900 rounded-3xl p-6 min-h-[400px] flex flex-col justify-between">
-          <div className="flex-1 flex flex-col justify-center items-center text-center p-4">
-            {!result && !loading && (
+        {/* Results Column Container */}
+        <div className={`transition duration-700 transform ${formSubmitted ? 'md:col-span-5 relative min-h-[400px] w-full opacity-100 translate-x-0' : 'hidden opacity-0 translate-x-8'}`}>
+
+          {/* Actual Results Card */}
+          <section className="absolute inset-0 bg-glass-bg backdrop-blur-md border border-glass-border shadow-glass-dark rounded-3xl p-6 flex flex-col justify-between">
+            <div className="flex-1 flex flex-col justify-center items-center text-center p-4">
+            {!result && !loading && formSubmitted && (
               <div id="empty-state">
                 <div className="w-16 h-16 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-4 text-slate-500">
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-slate-200">Waiting for Submission</h3>
+                <h3 className="text-lg font-semibold text-slate-200">Waiting for Results</h3>
                 <p className="text-slate-500 text-xs mt-1 max-w-[240px]">
-                  Fill out the intake form to begin. Real-time updates and dispatcher status will display here.
+                  Real-time updates and dispatcher status will display here once processed.
                 </p>
               </div>
             )}
@@ -433,16 +444,17 @@ export default function Home() {
             )}
           </div>
 
-          <div className="text-[10px] text-slate-600 text-center border-t border-slate-900 pt-4">
+          <div className="text-[10px] text-slate-600 text-center border-t border-slate-900 pt-4 mt-4">
             Security Protected • Coordinates transmitted directly to local government servers
           </div>
-        </section>
+          </section>
+        </div>
 
       </main>
 
       {/* Footer */}
-      <footer className="w-full text-center py-8 text-xs text-slate-600 border-t border-slate-900 mt-12">
-        Swasthya Grid Triage Dispatch Dashboard © {new Date().getFullYear()} • Powered by Google Cloud
+      <footer className="w-full text-center py-8 text-xs text-slate-600 border-t border-slate-900 mt-12 z-10" suppressHydrationWarning>
+        PulseDesk Triage Dispatch Dashboard © {new Date().getFullYear()} • Powered by Google Cloud
       </footer>
     </div>
   );

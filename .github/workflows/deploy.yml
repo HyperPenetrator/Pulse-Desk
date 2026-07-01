@@ -1,0 +1,123 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-backend:
+    name: Backend Test Suite
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Pytest
+        run: |
+          pytest -v
+
+  test-frontend:
+    name: Frontend Lint & Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Verify Static Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: https://mock-backend-url.run.app
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: [test-backend, test-frontend]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Setup authentication using Workload Identity Federation (recommended) or SA Key
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          # If using OIDC (preferred):
+          # workload_identity_provider: ${{ vars.WORKLOAD_PROVIDER }}
+          # service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          # Or if using static key fallback:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Authorize Docker Push
+        run: |
+          gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
+
+      # Build and Push Backend Image to Artifact Registry
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t ${{ vars.ARTIFACT_REGISTRY_REPO }}/${{ vars.CLOUD_RUN_SERVICE_NAME }}:${{ github.sha }} -f infra/Dockerfile backend
+          docker push ${{ vars.ARTIFACT_REGISTRY_REPO }}/${{ vars.CLOUD_RUN_SERVICE_NAME }}:${{ github.sha }}
+
+      # Deploy Backend to Cloud Run
+      - name: Deploy Backend to Cloud Run
+        run: |
+          gcloud run deploy ${{ vars.CLOUD_RUN_SERVICE_NAME }} \
+            --image=${{ vars.ARTIFACT_REGISTRY_REPO }}/${{ vars.CLOUD_RUN_SERVICE_NAME }}:${{ github.sha }} \
+            --region=${{ vars.GCP_REGION }} \
+            --platform=managed \
+            --allow-unauthenticated \
+            --project=${{ vars.GCP_PROJECT_ID }} \
+            --update-secrets=DATABASE_URL=DATABASE_URL:latest,JWT_SECRET_KEY=JWT_SECRET_KEY:latest
+
+      # Build and Deploy Next.js Frontend to Firebase Hosting
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Build Frontend for Export
+        working-directory: frontend
+        run: npm ci && npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+
+      - name: Deploy Frontend to Firebase Hosting
+        working-directory: frontend
+        run: |
+          firebase deploy --only hosting -P staging --token "${{ secrets.FIREBASE_TOKEN }}"

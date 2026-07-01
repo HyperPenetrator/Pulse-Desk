@@ -1,0 +1,14 @@
+{
+  "name": "Healthify PulseDesk",
+  "short_name": "Healthify",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ],
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

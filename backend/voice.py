@@ -8,6 +8,8 @@ from comms_client import transcribe_audio
 from database import get_db
 from dependencies import RequireRole
 from models import InventoryItem, FootfallLog, Staff, AttendanceLog
+from config import settings
+
 
 router = APIRouter(prefix="/api/v1/voice", tags=["voice"])
 
@@ -72,7 +74,10 @@ def process_intent_routing(db: Session, text: str, facility_id: uuid.UUID) -> tu
     inventory_items = db.query(InventoryItem).filter(InventoryItem.facility_id == facility_id).all()
     matched_item = None
     for item in inventory_items:
-        if item.medicine_name.lower() in text_lower:
+        # Check standard exact matching or loose substring match by stripping common dosages
+        db_name = item.medicine_name.lower()
+        base_db_name = re.sub(r'\s*\d+\s*(mg|ml|g|sachets)\b', '', db_name).strip()
+        if db_name in text_lower or (len(base_db_name) > 3 and base_db_name in text_lower):
             matched_item = item
             break
             
@@ -120,6 +125,7 @@ def process_intent_routing(db: Session, text: str, facility_id: uuid.UUID) -> tu
 async def transcribe(
     file: UploadFile = File(...),
     language_code: Optional[str] = Form(None),
+    mock_text: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     claims: dict = Depends(RequireRole(["receptionist", "phc_incharge", "district_admin"]))
 ):
@@ -132,11 +138,19 @@ async def transcribe(
             detail="Unsupported audio format. Supported formats: .mp3, .wav, .ogg, .m4a"
         )
         
-    # Read audio content
-    audio_content = await file.read()
-    
-    # Transcribe audio
-    transcription_result = transcribe_audio(audio_content, language_code)
+    # If mock_text is explicitly provided (e.g. from frontend UI testing), use it directly
+    if mock_text is not None:
+        transcription_result = {
+            "transcribed_text": mock_text,
+            "confidence_score": 1.0,
+            "detected_language_code": language_code or "en-US"
+        }
+    else:
+        # Read audio content
+        audio_content = await file.read()
+        
+        # Transcribe audio
+        transcription_result = transcribe_audio(audio_content, language_code)
     
     # Intent routing
     facility_id_str = claims.get("facility_id")
@@ -159,3 +173,4 @@ async def transcribe(
         "extracted_entity": extracted_entity,
         "extracted_value": extracted_value
     }
+
