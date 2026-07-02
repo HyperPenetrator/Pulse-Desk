@@ -5,7 +5,7 @@
   --color-brand-accent: var(--accent-secondary);
   --color-brand-danger: var(--status-critical);
   --color-brand-warning: var(--status-warning);
-  --color-brand-cyan: #06b6d4;
+  --color-brand-cyan: var(--accent-cyan);
   --color-brand-bg-start: var(--bg-start);
   --color-brand-bg-end: var(--bg-end);
   --color-brand-card: var(--card-bg);
@@ -69,18 +69,18 @@
   
   /* Typography */
   --text-primary: #000000;
-  --text-muted: #000000;
+  --text-muted: #64748b;
   
   /* Brand Colors */
   --accent-color: #2563eb;
   --accent-secondary: #059669;
+  --accent-cyan: #06b6d4;
   
   /* Status Colors */
   --status-critical: #ef4444;
   --status-warning: #f59e0b;
   
   /* Glassmorphism System */
-  --glass-morphism-opacity: 0.85;
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(0, 0, 0, 0.15);
   --glass-shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.12);
@@ -104,18 +104,18 @@
   
   /* Typography */
   --text-primary: #FFFFFF;
-  --text-muted: #FFFFFF;
+  --text-muted: #94a3b8;
   
   /* Brand Colors */
   --accent-color: #3b82f6;
   --accent-secondary: #10b981;
+  --accent-cyan: #06b6d4;
   
   /* Status Colors */
   --status-critical: #f43f5e;
   --status-warning: #fbbf24;
   
   /* Glassmorphism System */
-  --glass-morphism-opacity: 0.05;
   --glass-bg: rgba(11, 14, 20, 0.7);
   --glass-border: rgba(255, 255, 255, 0.1);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
