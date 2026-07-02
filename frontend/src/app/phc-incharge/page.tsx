@@ -284,7 +284,7 @@ export default function PHCInchargeDashboard() {
           <button
             id="logout-button"
             onClick={handleLogout}
-            className="text-xs bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 text-rose-800 dark:text-rose-300 rounded-xl px-3.5 py-1.5 transition"
+            className="text-xs bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 text-rose-800 dark:text-rose-300 rounded-xl px-3.5 py-3 md:py-1.5 min-h-[44px] md:min-h-0 flex items-center justify-center transition"
           >
             Sign Out
           </button>
@@ -309,7 +309,7 @@ export default function PHCInchargeDashboard() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: 0.00, ease: "easeOut" }}
-              className={`md:col-span-5 bg-glass-bg backdrop-blur-md border border-glass-border shadow-glass-dark rounded-3xl p-6 space-y-4 transition-colors duration-500 ${(fsiData?.fsi_value || 0) > 0.001 ? 'border-brand-danger/50 ring-1 ring-brand-danger/30' : ''}`}
+              className={`order-2 md:order-1 md:col-span-5 bg-glass-bg backdrop-blur-md border border-glass-border shadow-glass-dark rounded-3xl p-6 space-y-4 transition-colors duration-500 ${(fsiData?.fsi_value || 0) > 0.001 ? 'border-brand-danger/50 ring-1 ring-brand-danger/30' : ''}`}
             >
               <div>
                 <h2 className="text-lg font-bold text-text-primary dark:text-white">Facility Stress Index (FSI)</h2>
@@ -402,7 +402,7 @@ export default function PHCInchargeDashboard() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: 0.05, ease: "easeOut" }}
-              className={`md:col-span-7 bg-glass-bg backdrop-blur-md border shadow-glass-dark rounded-3xl p-6 space-y-4 transition-colors duration-500 ${(attendanceData && attendanceData.present_count < attendanceData.sanctioned_staff) ? 'border-brand-danger/50 ring-1 ring-brand-danger/30' : 'border-glass-border'}`}
+              className={`order-1 md:order-2 md:col-span-7 bg-glass-bg backdrop-blur-md border shadow-glass-dark rounded-3xl p-6 space-y-4 transition-colors duration-500 ${(attendanceData && attendanceData.present_count < attendanceData.sanctioned_staff) ? 'border-brand-danger/50 ring-1 ring-brand-danger/30' : 'border-glass-border'}`}
             >
               <div>
                 <h2 className="text-lg font-bold text-text-primary">Staff Attendance Log</h2>
@@ -586,7 +586,7 @@ export default function PHCInchargeDashboard() {
                       if (!shortages && staffShort === 0) draft += `- Anticipated surge load based on recent footfall trends.`;
                       setRedistributionReason(draft);
                     }}
-                    className="text-[10px] flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-500/30 border border-indigo-200 dark:border-indigo-500/30 rounded-lg px-2.5 py-1.5 transition uppercase tracking-wider font-bold"
+                    className="text-[10px] flex items-center justify-center gap-1.5 bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-500/30 border border-indigo-200 dark:border-indigo-500/30 rounded-lg px-2.5 py-3 md:py-1.5 transition uppercase tracking-wider font-bold min-h-[44px] md:min-h-0"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                     Auto-Fill Request
@@ -606,7 +606,7 @@ export default function PHCInchargeDashboard() {
                 id="request-redistribution-button"
                 type="submit"
                 disabled={submittingRedistribution}
-                className="w-full md:w-auto px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 hover:from-emerald-400 hover:to-teal-300 disabled:bg-surface dark:bg-slate-800 disabled:text-slate-500 transition duration-200 shadow-lg shadow-emerald-500/10"
+                className="w-full md:w-auto px-6 py-3.5 md:py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 hover:from-emerald-400 hover:to-teal-300 disabled:bg-surface dark:bg-slate-800 disabled:text-slate-500 transition duration-200 shadow-lg shadow-emerald-500/10 min-h-[44px] flex items-center justify-center"
               >
                 {submittingRedistribution ? 'Submitting...' : 'Request Redistribution'}
               </button>

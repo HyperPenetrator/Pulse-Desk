@@ -113,7 +113,7 @@ export default function DashboardSwitcher() {
             </h3>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-slate-500 hover:text-text-muted dark:text-slate-300 transition text-xs"
+              className="text-slate-500 hover:text-text-muted dark:text-slate-300 transition text-xs px-3 py-1.5 min-h-[44px] md:min-h-0 flex items-center justify-center"
             >
               Close
             </button>
@@ -126,7 +126,7 @@ export default function DashboardSwitcher() {
               <select
                 value={role}
                 onChange={(e: any) => setRole(e.target.value)}
-                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-text-primary dark:text-slate-200"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-3 md:py-2 text-base md:text-xs min-h-[44px] md:min-h-0 focus:outline-none focus:border-indigo-500 text-text-primary dark:text-slate-200"
               >
                 <option value="receptionist">Receptionist</option>
                 <option value="phc_incharge">PHC In-charge</option>
@@ -144,7 +144,7 @@ export default function DashboardSwitcher() {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder={role === 'district_admin' ? 'E.g. KA-BNG' : 'E.g. uuid-string-here'}
-                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-text-primary dark:text-slate-200"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-3 md:py-2 text-base md:text-xs min-h-[44px] md:min-h-0 focus:outline-none focus:border-indigo-500 text-text-primary dark:text-slate-200"
               />
             </div>
 
@@ -156,7 +156,7 @@ export default function DashboardSwitcher() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="E.g. admin123"
-                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-text-primary dark:text-slate-200"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-3 md:py-2 text-base md:text-xs min-h-[44px] md:min-h-0 focus:outline-none focus:border-indigo-500 text-text-primary dark:text-slate-200"
               />
             </div>
 
@@ -168,7 +168,7 @@ export default function DashboardSwitcher() {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-slate-50 font-bold py-2 rounded-xl text-xs transition duration-150"
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-slate-50 font-bold py-3 md:py-2 min-h-[44px] md:min-h-0 rounded-xl text-xs transition duration-150 flex items-center justify-center"
             >
               Authenticate & Switch
             </button>

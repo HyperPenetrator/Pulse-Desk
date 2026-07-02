@@ -140,7 +140,7 @@ export default function Home() {
       {/* Main Content */}
       <main className={`relative flex-1 w-full mx-auto px-6 py-8 z-10 transition duration-700 ease-in-out ${formSubmitted
         ? 'max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-8 items-start'
-        : 'max-w-2xl flex flex-col items-center'
+        : 'max-w-full md:max-w-2xl flex flex-col items-center'
         }`}>
 
         {/* Form Column */}
@@ -169,14 +169,14 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setSymptom('Severe chest pain, breathlessness, and sweating')}
-                  className="text-xs bg-surface-alt dark:bg-slate-950 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg px-2.5 py-1 text-text-muted dark:text-slate-400 hover:text-white transition"
+                  className="text-xs bg-surface-alt dark:bg-slate-950 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg px-2.5 py-2.5 min-h-[44px] md:min-h-0 flex items-center justify-center text-text-muted dark:text-slate-400 hover:text-white transition"
                 >
                   ⚡ Try Emergency Symptom
                 </button>
                 <button
                   type="button"
                   onClick={() => setSymptom('Mild headache and sore throat')}
-                  className="text-xs bg-surface-alt dark:bg-slate-950 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg px-2.5 py-1 text-text-muted dark:text-slate-400 hover:text-white transition"
+                  className="text-xs bg-surface-alt dark:bg-slate-950 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg px-2.5 py-2.5 min-h-[44px] md:min-h-0 flex items-center justify-center text-text-muted dark:text-slate-400 hover:text-white transition"
                 >
                   🍃 Try Non-Emergency Symptom
                 </button>
@@ -192,14 +192,14 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-2 bg-surface-alt dark:bg-slate-950 p-1 border border-glass-border dark:border-slate-800 rounded-xl">
                 <button
                   type="button"
-                  className={`py-2 text-xs font-medium rounded-lg transition ${locationMethod === 'gps' ? 'bg-emerald-500 text-slate-950' : 'text-text-muted dark:text-slate-400 hover:text-white'}`}
+                  className={`py-3 md:py-2 text-xs font-medium rounded-lg transition min-h-[44px] md:min-h-0 flex items-center justify-center ${locationMethod === 'gps' ? 'bg-emerald-500 text-slate-950 font-bold' : 'text-text-muted dark:text-slate-400 hover:text-white'}`}
                   onClick={() => setLocationMethod('gps')}
                 >
                   Browser GPS
                 </button>
                 <button
                   type="button"
-                  className={`py-2 text-xs font-medium rounded-lg transition ${locationMethod === 'manual' ? 'bg-emerald-500 text-slate-950' : 'text-text-muted dark:text-slate-400 hover:text-white'}`}
+                  className={`py-3 md:py-2 text-xs font-medium rounded-lg transition min-h-[44px] md:min-h-0 flex items-center justify-center ${locationMethod === 'manual' ? 'bg-emerald-500 text-slate-950 font-bold' : 'text-text-muted dark:text-slate-400 hover:text-white'}`}
                   onClick={() => setLocationMethod('manual')}
                 >
                   Manual Address / Coordinates
@@ -252,25 +252,25 @@ export default function Home() {
                       Select a preset testing location or enter custom coordinates below.
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       <button
                         type="button"
                         onClick={() => handlePresetLocation('bangalore')}
-                        className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-1.5 text-center transition text-text-primary dark:text-white"
+                        className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-3 sm:py-1.5 text-center transition text-text-primary dark:text-white min-h-[44px] sm:min-h-0 flex items-center justify-center"
                       >
                         Bangalore (Near)
                       </button>
                       <button
                         type="button"
                         onClick={() => handlePresetLocation('mumbai')}
-                        className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-1.5 text-center transition text-text-primary dark:text-white"
+                        className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-3 sm:py-1.5 text-center transition text-text-primary dark:text-white min-h-[44px] sm:min-h-0 flex items-center justify-center"
                       >
                         Mumbai (Far)
                       </button>
                       <button
                         type="button"
                         onClick={() => handlePresetLocation('rural')}
-                        className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-1.5 text-center transition text-text-primary dark:text-white"
+                        className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-3 sm:py-1.5 text-center transition text-text-primary dark:text-white min-h-[44px] sm:min-h-0 flex items-center justify-center"
                       >
                         Remote Rural
                       </button>
@@ -281,7 +281,7 @@ export default function Home() {
                       <input
                         id="address-input"
                         type="text"
-                        className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-text-primary dark:text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+                        className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-3 md:py-2 text-base md:text-sm min-h-[44px] md:min-h-0 text-text-primary dark:text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
                         placeholder="Enter city or area name..."
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
@@ -295,7 +295,7 @@ export default function Home() {
                           id="latitude-input"
                           type="number"
                           step="any"
-                          className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-text-primary dark:text-slate-100 focus:outline-none"
+                          className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-3 md:py-2 text-base md:text-sm min-h-[44px] md:min-h-0 text-text-primary dark:text-slate-100 focus:outline-none"
                           value={latitude || ''}
                           onChange={(e) => setLatitude(e.target.value ? parseFloat(e.target.value) : null)}
                         />
@@ -306,7 +306,7 @@ export default function Home() {
                           id="longitude-input"
                           type="number"
                           step="any"
-                          className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-text-primary dark:text-slate-100 focus:outline-none"
+                          className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-3 md:py-2 text-base md:text-sm min-h-[44px] md:min-h-0 text-text-primary dark:text-slate-100 focus:outline-none"
                           value={longitude || ''}
                           onChange={(e) => setLongitude(e.target.value ? parseFloat(e.target.value) : null)}
                         />

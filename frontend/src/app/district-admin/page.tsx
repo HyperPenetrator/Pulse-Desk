@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, ProgressBar, Badge } from '@tremor/react';
-import { motion } from 'framer-motion';// ── Types ────────────────────────────────────────────────────────────────────
+import { motion, AnimatePresence } from 'framer-motion';// ── Types ────────────────────────────────────────────────────────────────────
 type FSIFacility = { facility_id: string; facility_name: string; fsi_value: number };
 type FSIData = { district_code: string; average_fsi: number; facilities: FSIFacility[] };
 type Trigger = { metric: string; value: number; threshold: number; detail: string };
@@ -45,6 +45,7 @@ export default function DistrictAdminDashboard() {
   const [districtCode, setDistrictCode] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string>(KNOWN_DISTRICTS[0]);
   const [activeScreen, setActiveScreen] = useState<Screen>('fsi');
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Data states
   const [fsiData, setFsiData] = useState<FSIData | null>(null);
@@ -231,9 +232,85 @@ export default function DistrictAdminDashboard() {
   return (
     <div className="min-h-screen bg-surface text-text-primary flex flex-col font-sans selection:bg-brand-primary/20">
 
+      {/* Drawer Overlay Backdrop & Menu */}
+      <AnimatePresence>
+        {drawerOpen && (
+          <>
+            {/* Backdrop overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setDrawerOpen(false)}
+              className="fixed inset-0 bg-black z-40 md:hidden"
+            />
+
+            {/* Slide-in Drawer */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "tween", duration: 0.3 }}
+              className="fixed top-0 bottom-0 left-0 w-64 bg-surface dark:bg-slate-950 border-r border-glass-border dark:border-slate-800 z-50 p-6 flex flex-col gap-6 md:hidden shadow-2xl"
+            >
+              <div className="flex justify-between items-center">
+                <h2 className="text-sm font-bold text-text-primary uppercase tracking-widest">Navigation</h2>
+                <button
+                  onClick={() => setDrawerOpen(false)}
+                  className="p-1 rounded-lg text-slate-500 hover:text-white min-h-[44px] min-w-[44px] flex items-center justify-center"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {SCREENS.map(s => (
+                  <button
+                    key={s.id}
+                    onClick={() => {
+                      setActiveScreen(s.id);
+                      setDrawerOpen(false);
+                    }}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold uppercase tracking-wider text-left transition-all min-h-[44px] ${
+                      activeScreen === s.id
+                        ? 'bg-violet-600/20 text-violet-300 border border-violet-500/30'
+                        : 'text-slate-500 hover:text-white border border-transparent'
+                    }`}
+                  >
+                    <span>{s.icon}</span>
+                    <span>{s.label}</span>
+                    {s.id === 'redistribution' && redistRequests.filter(r => r.status === 'active').length > 0 && (
+                      <span className="ml-auto bg-violet-600 text-white text-[10px] rounded-full px-1.5 py-0.5 font-bold">
+                        {redistRequests.filter(r => r.status === 'active').length}
+                      </span>
+                    )}
+                    {s.id === 'underperforming' && underperforming.length > 0 && (
+                      <span className="ml-auto bg-rose-600 text-white text-[10px] rounded-full px-1.5 py-0.5 font-bold">
+                        {underperforming.length}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <header className="relative w-full border-b border-glass-border bg-glass-bg backdrop-blur-md px-6 py-4 flex justify-between items-center z-20 shadow-glass-light">
         <div className="flex items-center gap-3">
+          {/* Hamburger Menu Button */}
+          <button
+            id="mobile-drawer-button"
+            onClick={() => setDrawerOpen(true)}
+            className="md:hidden p-2 rounded-lg bg-surface-alt dark:bg-slate-900 border border-glass-border text-slate-500 hover:text-text-muted dark:text-slate-300 min-h-[44px] min-w-[44px] flex items-center justify-center"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
           <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-violet-500/20">
             <svg className="w-4 h-4 text-text-primary dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -268,7 +345,7 @@ export default function DistrictAdminDashboard() {
       )}
 
       {/* Nav Tabs */}
-      <nav className="sticky top-0 z-10 w-full border-b border-glass-border bg-glass-bg backdrop-blur-sm px-6 py-0 flex gap-1 overflow-x-auto shadow-glass-light">
+      <nav className="sticky top-0 z-10 w-full border-b border-glass-border bg-glass-bg backdrop-blur-sm px-6 py-0 hidden md:flex gap-1 overflow-x-auto shadow-glass-light">
         {SCREENS.map(s => (
           <button
             key={s.id}
@@ -394,9 +471,9 @@ export default function DistrictAdminDashboard() {
                 </div>
 
                  {/* Heatmap grid + summary sidebar */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                   {/* Left Column: Facility Cards */}
-                  <div className="lg:col-span-8 space-y-4">
+                  <div className="md:col-span-8 space-y-4">
                     <div id="fsi-heatmap-grid" className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {fsiData.facilities.map(f => {
                         const col = fsiColor(f.fsi_value);
@@ -440,7 +517,7 @@ export default function DistrictAdminDashboard() {
                   </div>
 
                   {/* Right Column: Status Summary Panel */}
-                  <div className="lg:col-span-4">
+                  <div className="md:col-span-4">
                     <Card className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
                       <div>
                         <h3 className="font-bold text-text-primary dark:text-white text-base">District Status Summary</h3>
