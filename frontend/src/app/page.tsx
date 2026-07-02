@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Home() {
   const [symptom, setSymptom] = useState('');
@@ -205,99 +206,115 @@ export default function Home() {
                 </button>
               </div>
 
-              {locationMethod === 'gps' && (
-                <div className="bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between">
-                  <div>
-                    <div className="text-xs font-medium text-text-muted dark:text-slate-400">GPS Coordinates Status</div>
-                    <div className="text-sm font-semibold mt-1">
-                      {gpsStatus === 'idle' && 'Waiting to fetch...'}
-                      {gpsStatus === 'fetching' && 'Retrieving current position...'}
-                      {gpsStatus === 'success' && `Latitude: ${latitude?.toFixed(4)}, Longitude: ${longitude?.toFixed(4)}`}
-                      {gpsStatus === 'failed' && 'GPS access failed/denied.'}
-                    </div>
-                  </div>
-                  {gpsStatus === 'failed' ? (
-                    <span className="text-xs text-rose-400 font-medium">Please switch to manual</span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={fetchGPSLocation}
-                      className="text-xs bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 hover:bg-surface dark:bg-slate-800 rounded-lg px-3 py-1.5 transition text-text-primary dark:text-white"
-                    >
-                      Retry GPS
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {locationMethod === 'manual' && (
-                <div className="space-y-3 bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl p-4">
-                  <div className="text-xs text-text-muted dark:text-slate-400 mb-1">
-                    Select a preset testing location or enter custom coordinates below.
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handlePresetLocation('bangalore')}
-                      className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-1.5 text-center transition text-text-primary dark:text-white"
-                    >
-                      Bangalore (Near)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handlePresetLocation('mumbai')}
-                      className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-1.5 text-center transition text-text-primary dark:text-white"
-                    >
-                      Mumbai (Far)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handlePresetLocation('rural')}
-                      className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-1.5 text-center transition text-text-primary dark:text-white"
-                    >
-                      Remote Rural
-                    </button>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="address-input" className="block text-[10px] uppercase tracking-wider text-slate-500">Typed Address / Location Name</label>
-                    <input
-                      id="address-input"
-                      type="text"
-                      className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
-                      placeholder="Enter city or area name..."
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
+              <AnimatePresence mode="wait">
+                {locationMethod === 'gps' && (
+                  <motion.div
+                    key="gps"
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between"
+                  >
                     <div>
-                      <label htmlFor="latitude-input" className="block text-[10px] uppercase tracking-wider text-slate-500">Latitude</label>
+                      <div className="text-xs font-medium text-text-muted dark:text-slate-400">GPS Coordinates Status</div>
+                      <div className="text-sm font-semibold mt-1">
+                        {gpsStatus === 'idle' && 'Waiting to fetch...'}
+                        {gpsStatus === 'fetching' && 'Retrieving current position...'}
+                        {gpsStatus === 'success' && `Latitude: ${latitude?.toFixed(4)}, Longitude: ${longitude?.toFixed(4)}`}
+                        {gpsStatus === 'failed' && 'GPS access failed/denied.'}
+                      </div>
+                    </div>
+                    {gpsStatus === 'failed' ? (
+                      <span className="text-xs text-rose-400 font-medium">Please switch to manual</span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={fetchGPSLocation}
+                        className="text-xs bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 hover:bg-surface dark:bg-slate-800 rounded-lg px-3 py-1.5 transition text-text-primary dark:text-white"
+                      >
+                        Retry GPS
+                      </button>
+                    )}
+                  </motion.div>
+                )}
+
+                {locationMethod === 'manual' && (
+                  <motion.div
+                    key="manual"
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-3 bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl p-4"
+                  >
+                    <div className="text-xs text-text-muted dark:text-slate-400 mb-1">
+                      Select a preset testing location or enter custom coordinates below.
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handlePresetLocation('bangalore')}
+                        className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-1.5 text-center transition text-text-primary dark:text-white"
+                      >
+                        Bangalore (Near)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handlePresetLocation('mumbai')}
+                        className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-1.5 text-center transition text-text-primary dark:text-white"
+                      >
+                        Mumbai (Far)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handlePresetLocation('rural')}
+                        className="text-[11px] bg-surface-alt dark:bg-slate-900 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg py-1.5 text-center transition text-text-primary dark:text-white"
+                      >
+                        Remote Rural
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label htmlFor="address-input" className="block text-[10px] uppercase tracking-wider text-slate-500">Typed Address / Location Name</label>
                       <input
-                        id="latitude-input"
-                        type="number"
-                        step="any"
-                        className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none"
-                        value={latitude || ''}
-                        onChange={(e) => setLatitude(e.target.value ? parseFloat(e.target.value) : null)}
+                        id="address-input"
+                        type="text"
+                        className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+                        placeholder="Enter city or area name..."
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
                       />
                     </div>
-                    <div>
-                      <label htmlFor="longitude-input" className="block text-[10px] uppercase tracking-wider text-slate-500">Longitude</label>
-                      <input
-                        id="longitude-input"
-                        type="number"
-                        step="any"
-                        className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none"
-                        value={longitude || ''}
-                        onChange={(e) => setLongitude(e.target.value ? parseFloat(e.target.value) : null)}
-                      />
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label htmlFor="latitude-input" className="block text-[10px] uppercase tracking-wider text-slate-500">Latitude</label>
+                        <input
+                          id="latitude-input"
+                          type="number"
+                          step="any"
+                          className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none"
+                          value={latitude || ''}
+                          onChange={(e) => setLatitude(e.target.value ? parseFloat(e.target.value) : null)}
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="longitude-input" className="block text-[10px] uppercase tracking-wider text-slate-500">Longitude</label>
+                        <input
+                          id="longitude-input"
+                          type="number"
+                          step="any"
+                          className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none"
+                          value={longitude || ''}
+                          onChange={(e) => setLongitude(e.target.value ? parseFloat(e.target.value) : null)}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {error && (

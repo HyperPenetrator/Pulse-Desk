@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 export default function PHCInchargeDashboard() {
   const [token, setToken] = useState<string | null>(null);
@@ -15,6 +16,7 @@ export default function PHCInchargeDashboard() {
   const [fsiData, setFsiData] = useState<any | null>(null);
 
   const [loadingData, setLoadingData] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Redistribution form states
@@ -51,6 +53,7 @@ export default function PHCInchargeDashboard() {
   useEffect(() => {
     if (!token || !facilityId) return;
 
+    setIsLoading(true);
     const fetchData = async () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
@@ -91,6 +94,8 @@ export default function PHCInchargeDashboard() {
         setError(null);
       } catch (err: any) {
         setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -297,13 +302,18 @@ export default function PHCInchargeDashboard() {
         {/* LEFT COLUMN: Main In-charge operations */}
         <div className="lg:col-span-8 space-y-8">
 
-          {/* FSI Gauge & Attendance Grid */}
+          {/* Top Row: FSI Gauge & Staffing Attendance / Alert side-by-side */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-            {/* FSI GAUGE */}
-            <section className={`md:col-span-6 bg-glass-bg backdrop-blur-md border border-glass-border shadow-glass-dark rounded-3xl p-6 space-y-4 transition-colors duration-500 ${(fsiData?.fsi_value || 0) > 0.001 ? 'border-brand-danger/50 ring-1 ring-brand-danger/30' : ''}`}>
+            {/* Stress level card (FSI GAUGE) - 40% (md:col-span-5) */}
+            <motion.section
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.00, ease: "easeOut" }}
+              className={`md:col-span-5 bg-glass-bg backdrop-blur-md border border-glass-border shadow-glass-dark rounded-3xl p-6 space-y-4 transition-colors duration-500 ${(fsiData?.fsi_value || 0) > 0.001 ? 'border-brand-danger/50 ring-1 ring-brand-danger/30' : ''}`}
+            >
               <div>
                 <h2 className="text-lg font-bold text-text-primary dark:text-white">Facility Stress Index (FSI)</h2>
-                <p className="text-text-muted dark:text-slate-400 text-xs mt-0.5">Real-time daily load vs catchment and beds capacity.</p>
+                <p className="text-text-muted dark:text-slate-400 text-xs mt-0.5">Real-time daily load vs capacity.</p>
               </div>
 
               <div className="flex flex-col items-center justify-center py-4 space-y-3">
@@ -330,8 +340,12 @@ export default function PHCInchargeDashboard() {
                     </defs>
                   </svg>
                   <div className="absolute text-center">
-                    <div id="fsi-value-display" className="text-3xl font-extrabold text-text-primary dark:text-white">
-                      {(fsiData?.fsi_value || 0).toFixed(4)}
+                    <div id="fsi-value-display" className="text-3xl font-extrabold text-text-primary dark:text-white flex justify-center">
+                      {isLoading ? (
+                        <span className="h-8 w-20 bg-text-muted/20 animate-pulse rounded-md" />
+                      ) : (
+                        (fsiData?.fsi_value || 0).toFixed(4)
+                      )}
                     </div>
                     <div className="text-[10px] text-text-muted dark:text-slate-400 font-bold uppercase tracking-wider mt-1">Stress Level</div>
                   </div>
@@ -340,29 +354,56 @@ export default function PHCInchargeDashboard() {
                 <div className="text-xs text-text-muted dark:text-slate-300 grid grid-cols-2 gap-x-6 gap-y-2 w-full pt-4 border-t border-glass-border dark:border-slate-900">
                   <div className="flex justify-between">
                     <span className="text-slate-500">Footfall today:</span>
-                    <span id="fsi-footfall" className="font-bold text-text-primary dark:text-white">{fsiData?.real_time_daily_footfall || 0}</span>
+                    <span id="fsi-footfall" className="font-bold text-text-primary dark:text-white">
+                      {isLoading ? (
+                        <span className="inline-block h-4 w-12 bg-text-muted/20 animate-pulse rounded-md align-middle" />
+                      ) : (
+                        fsiData?.real_time_daily_footfall || 0
+                      )}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Catchment Pop:</span>
-                    <span id="fsi-population" className="font-bold text-text-primary dark:text-white">{fsiData?.census_catchment_population || 0}</span>
+                    <span id="fsi-population" className="font-bold text-text-primary dark:text-white">
+                      {isLoading ? (
+                        <span className="inline-block h-4 w-16 bg-text-muted/20 animate-pulse rounded-md align-middle" />
+                      ) : (
+                        fsiData?.census_catchment_population || 0
+                      )}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Beds Baseline:</span>
-                    <span id="fsi-beds" className="font-bold text-text-primary dark:text-white">{fsiData?.available_beds_baseline || 0}</span>
+                    <span id="fsi-beds" className="font-bold text-text-primary dark:text-white">
+                      {isLoading ? (
+                        <span className="inline-block h-4 w-12 bg-text-muted/20 animate-pulse rounded-md align-middle" />
+                      ) : (
+                        fsiData?.available_beds_baseline || 0
+                      )}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Status:</span>
                     <span className={`font-bold ${(fsiData?.fsi_value || 0) > 0.001 ? 'text-rose-400' : 'text-emerald-400'
                       }`}>
-                      {(fsiData?.fsi_value || 0) > 0.001 ? 'High Stress' : 'Nominal'}
+                      {isLoading ? (
+                        <span className="inline-block h-4 w-16 bg-text-muted/20 animate-pulse rounded-md align-middle" />
+                      ) : (
+                        (fsiData?.fsi_value || 0) > 0.001 ? 'High Stress' : 'Nominal'
+                      )}
                     </span>
                   </div>
                 </div>
               </div>
-            </section>
+            </motion.section>
 
-            {/* STAFF ATTENDANCE LOG */}
-            <section className="md:col-span-6 bg-glass-bg backdrop-blur-md border border-glass-border shadow-glass-dark rounded-3xl p-6 space-y-4">
+            {/* Staff Attendance Log / Alert card - 60% (md:col-span-7) */}
+            <motion.section
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.05, ease: "easeOut" }}
+              className={`md:col-span-7 bg-glass-bg backdrop-blur-md border shadow-glass-dark rounded-3xl p-6 space-y-4 transition-colors duration-500 ${(attendanceData && attendanceData.present_count < attendanceData.sanctioned_staff) ? 'border-brand-danger/50 ring-1 ring-brand-danger/30' : 'border-glass-border'}`}
+            >
               <div>
                 <h2 className="text-lg font-bold text-text-primary">Staff Attendance Log</h2>
                 <p className="text-text-muted text-xs mt-0.5">Sanctioned counts vs active today.</p>
@@ -387,14 +428,22 @@ export default function PHCInchargeDashboard() {
                     <div className="bg-surface-alt dark:bg-slate-950 border border-slate-850 p-3 rounded-2xl text-center">
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Sanctioned Staff</span>
                       <span id="sanctioned-staff-count" className="text-2xl font-extrabold text-slate-100 mt-1 block">
-                        {attendanceData.sanctioned_staff}
+                        {isLoading ? (
+                          <span className="inline-block h-6 w-12 bg-text-muted/20 animate-pulse rounded-md" />
+                        ) : (
+                          attendanceData.sanctioned_staff
+                        )}
                       </span>
                     </div>
                     <div className="bg-surface-alt dark:bg-slate-950 border border-slate-850 p-3 rounded-2xl text-center">
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Present Today</span>
                       <span id="present-staff-count" className={`text-2xl font-extrabold mt-1 block ${attendanceData.present_count < attendanceData.sanctioned_staff ? 'text-amber-400' : 'text-emerald-400'
                         }`}>
-                        {attendanceData.present_count}
+                        {isLoading ? (
+                          <span className="inline-block h-6 w-12 bg-text-muted/20 animate-pulse rounded-md" />
+                        ) : (
+                          attendanceData.present_count
+                        )}
                       </span>
                     </div>
                   </div>
@@ -423,61 +472,95 @@ export default function PHCInchargeDashboard() {
               ) : (
                 <div className="text-slate-500 text-xs italic text-center py-8">Loading attendance metrics...</div>
               )}
-            </section>
+            </motion.section>
+          </div>
+
+          {/* Beds & Facility Info 3-column Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.10, ease: "easeOut" }}
+              className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4 text-center"
+            >
+              <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Available Beds</span>
+              <span className="text-2xl font-extrabold text-text-primary dark:text-white mt-1 block">
+                {isLoading ? (
+                  <span className="inline-block h-6 w-12 bg-text-muted/20 animate-pulse rounded-md" />
+                ) : (
+                  dashboardData?.available_beds ?? 0
+                )}
+              </span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.15, ease: "easeOut" }}
+              className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4 text-center"
+            >
+              <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Sanctioned Beds</span>
+              <span className="text-2xl font-extrabold text-text-primary dark:text-white mt-1 block">
+                {isLoading ? (
+                  <span className="inline-block h-6 w-12 bg-text-muted/20 animate-pulse rounded-md" />
+                ) : (
+                  dashboardData?.sanctioned_beds ?? 0
+                )}
+              </span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.20, ease: "easeOut" }}
+              className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4 text-center"
+            >
+              <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Facility Type</span>
+              <span className="text-lg font-extrabold text-text-primary dark:text-white mt-1 block uppercase tracking-wider">
+                {isLoading ? (
+                  <span className="inline-block h-6 w-24 bg-text-muted/20 animate-pulse rounded-md" />
+                ) : (
+                  dashboardData?.facility_type ?? 'PHC'
+                )}
+              </span>
+            </motion.div>
           </div>
 
           {/* INVENTORY TABLE WITH DRP reorder warning */}
-          <section className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
+          <motion.section
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.25, ease: "easeOut" }}
+            className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4"
+          >
             <div>
               <h2 className="text-xl font-bold text-text-primary dark:text-white">PHC Pharmacy Inventory</h2>
               <p className="text-text-muted dark:text-slate-400 text-xs mt-0.5">Real-time stock runway compared against Dynamic Reorder Points (DRP).</p>
             </div>
 
-            <div className="overflow-x-auto pt-2">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-glass-border dark:border-slate-800 text-slate-500">
-                    <th className="py-3">Medicine Name</th>
-                    <th className="py-3">Current Stock</th>
-                    <th className="py-3">Daily Burn Rate</th>
-                    <th className="py-3">DRP Value</th>
-                    <th className="py-3 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody id="inventory-table-body">
-                  {inventory && inventory.length > 0 ? (
-                    inventory.map((item: any) => {
-                      const isBelowDrp = item.current_stock < item.drp_value;
-                      return (
-                        <tr key={item.id} className="border-b border-glass-border dark:border-slate-900/50 hover:bg-surface-alt dark:bg-slate-900/10">
-                          <td className="py-3.5 font-semibold text-text-primary dark:text-slate-200">{item.medicine_name}</td>
-                          <td className="py-3.5 font-mono text-text-muted dark:text-slate-300">{item.current_stock}</td>
-                          <td className="py-3.5 text-text-muted dark:text-slate-400">{item.avg_daily_burn_rate} / day</td>
-                          <td className="py-3.5 font-mono text-text-muted dark:text-slate-400">{item.drp_value}</td>
-                          <td className="py-3.5 text-right">
-                            {isBelowDrp ? (
-                              <span className="inventory-flag inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-950/50 text-rose-300 border border-rose-900/30">
-                                <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
-                                Below DRP
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-950/20 text-emerald-400 border border-emerald-900/20">
-                                Healthy
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan={5} className="py-8 text-center text-slate-500 italic">No inventory tracked.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+            <div className="pt-2 space-y-3">
+              {inventory && inventory.length > 0 ? (
+                (() => {
+                  const maxVal = Math.max(...inventory.map((i: any) => i.current_stock || 0), 100);
+                  return inventory.map((item: any) => {
+                    const pct = Math.min(100, Math.round(((item.current_stock || 0) / maxVal) * 100));
+                    return (
+                      <div key={item.id} className="flex items-center justify-between gap-4 text-xs">
+                        <span className="font-semibold text-text-primary dark:text-slate-200 w-36 shrink-0">{item.medicine_name}</span>
+                        <div className="flex-1 bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-emerald-500 h-full rounded-full" 
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                        <span className="font-mono text-text-muted dark:text-slate-400 w-12 text-right">{item.current_stock}</span>
+                      </div>
+                    );
+                  });
+                })()
+              ) : (
+                <div className="text-slate-500 text-xs italic text-center py-4">No inventory tracked.</div>
+              )}
             </div>
-          </section>
+          </motion.section>
 
           {/* REQUEST REDISTRIBUTION */}
           <section className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-6">

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Card, ProgressBar, Badge } from '@tremor/react';// ── Types ────────────────────────────────────────────────────────────────────
+import { Card, ProgressBar, Badge } from '@tremor/react';
+import { motion } from 'framer-motion';// ── Types ────────────────────────────────────────────────────────────────────
 type FSIFacility = { facility_id: string; facility_name: string; fsi_value: number };
 type FSIData = { district_code: string; average_fsi: number; facilities: FSIFacility[] };
 type Trigger = { metric: string; value: number; threshold: number; detail: string };
@@ -54,6 +55,7 @@ export default function DistrictAdminDashboard() {
   const [benchmarks, setBenchmarks] = useState<BenchmarkData | null>(null);
 
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [actionMsg, setActionMsg] = useState<string | null>(null);
   const [drillFacility, setDrillFacility] = useState<UnderperformingFacility | null>(null);
   const [aiState, setAiState] = useState<'active' | 'applying' | 'applied' | 'dismissed'>('active');
@@ -127,15 +129,18 @@ export default function DistrictAdminDashboard() {
       setError(null);
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   }, [token, districtCode, backendUrl]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || !districtCode) return;
+    setIsLoading(true);
     fetchAll();
     const iv = setInterval(fetchAll, 5000);
     return () => clearInterval(iv);
-  }, [token, fetchAll]);
+  }, [token, districtCode, fetchAll]);
 
   // ── Redistribution approve / reject ────────────────────────────────────────
   const handleRedistAction = async (alertId: string, action: 'approved' | 'rejected') => {
@@ -263,15 +268,15 @@ export default function DistrictAdminDashboard() {
       )}
 
       {/* Nav Tabs */}
-      <nav className="w-full border-b border-glass-border bg-glass-bg backdrop-blur-md px-6 py-0 flex gap-1 overflow-x-auto shadow-glass-light">
+      <nav className="sticky top-0 z-10 w-full border-b border-glass-border bg-glass-bg backdrop-blur-sm px-6 py-0 flex gap-1 overflow-x-auto shadow-glass-light">
         {SCREENS.map(s => (
           <button
             key={s.id}
             id={`tab-${s.id}`}
             onClick={() => setActiveScreen(s.id)}
-            className={`flex items-center gap-1.5 px-4 py-3 text-xs font-semibold uppercase tracking-wider whitespace-nowrap border-b-2 transition-all duration-150 ${activeScreen === s.id
-                ? 'border-violet-500 text-violet-300'
-                : 'border-transparent text-slate-500 hover:text-text-muted dark:text-slate-300'
+            className={`relative flex items-center gap-1.5 px-4 py-3 text-xs font-semibold uppercase tracking-wider whitespace-nowrap transition-all duration-150 ${activeScreen === s.id
+                ? 'text-violet-300'
+                : 'text-slate-500 hover:text-text-muted dark:text-slate-300'
               }`}
           >
             <span>{s.icon}</span>{s.label}
@@ -284,6 +289,13 @@ export default function DistrictAdminDashboard() {
               <span className="ml-1 bg-rose-600 text-white text-[10px] rounded-full px-1.5 py-0.5 font-bold">
                 {underperforming.length}
               </span>
+            )}
+            {activeScreen === s.id && (
+              <motion.div
+                layoutId="activeTab"
+                className="absolute bottom-0 left-0 right-0 h-[2px] bg-violet-500"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
             )}
           </button>
         ))}
@@ -344,61 +356,127 @@ export default function DistrictAdminDashboard() {
                   </div>
                 )}
 
-                {/* Summary bar */}
+                 {/* Summary bar */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-4 text-center">
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Total Facilities</div>
-                    <div id="fsi-total-facilities" className="text-3xl font-extrabold text-text-primary dark:text-white mt-1">{fsiData.facilities.length}</div>
+                    <div id="fsi-total-facilities" className="text-3xl font-extrabold text-text-primary dark:text-white mt-1">
+                      {isLoading ? (
+                        <span className="inline-block h-8 w-10 bg-text-muted/20 animate-pulse rounded-md" />
+                      ) : (
+                        fsiData.facilities.length
+                      )}
+                    </div>
                   </div>
                   <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-4 text-center">
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">District Avg FSI</div>
                     <div id="fsi-avg-value" className="text-3xl font-extrabold mt-1" style={{ color: fsiColor(fsiData.average_fsi).bar }}>
-                      {fsiData.average_fsi.toFixed(6)}
+                      {isLoading ? (
+                        <span className="inline-block h-8 w-28 bg-text-muted/20 animate-pulse rounded-md" />
+                      ) : (
+                        fsiData.average_fsi.toFixed(6)
+                      )}
                     </div>
                   </div>
                   <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-4 text-center">
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Critical Facilities</div>
                     <div className="text-3xl font-extrabold text-rose-400 mt-1">
-                      {fsiData.facilities.filter(f => f.fsi_value > 0.001).length}
+                      {isLoading ? (
+                        <span className="inline-block h-8 w-10 bg-text-muted/20 animate-pulse rounded-md" />
+                      ) : (
+                        fsiData.facilities.filter(f => f.fsi_value > 0.001).length
+                      )}
                     </div>
                   </div>
                   <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-4 text-center">
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Normal Facilities</div>
                     <div className="text-3xl font-extrabold text-emerald-400 mt-1">
-                      {fsiData.facilities.filter(f => f.fsi_value <= 0.0005).length}
+                      {isLoading ? (
+                        <span className="inline-block h-8 w-10 bg-text-muted/20 animate-pulse rounded-md" />
+                      ) : (
+                        fsiData.facilities.filter(f => f.fsi_value <= 0.0005).length
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Heatmap grid */}
-                <div id="fsi-heatmap-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {fsiData.facilities.map(f => {
-                    const col = fsiColor(f.fsi_value);
-                    const pct = Math.min(100, (f.fsi_value / 0.002) * 100);
-                    return (
-                      <Card
-                        key={f.facility_id}
-                        className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-5 space-y-3 hover:border-slate-600 transition"
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="font-semibold text-text-primary dark:text-white text-sm">{f.facility_name}</div>
-                          </div>
-                          <Badge color={f.fsi_value > 0.001 ? "red" : f.fsi_value > 0.0005 ? "yellow" : "emerald"}>
-                            {col.label}
+                 {/* Heatmap grid + summary sidebar */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Left Column: Facility Cards */}
+                  <div className="lg:col-span-8 space-y-4">
+                    <div id="fsi-heatmap-grid" className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {fsiData.facilities.map(f => {
+                        const col = fsiColor(f.fsi_value);
+                        const pct = Math.min(100, (f.fsi_value / 0.002) * 100);
+                        return (
+                          <Card
+                            key={f.facility_id}
+                            className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-5 space-y-3 hover:border-slate-600 transition"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="flex items-center gap-2">
+                                <span className={f.fsi_value > 0.001 ? "text-rose-400" : f.fsi_value > 0.0005 ? "text-amber-400" : "text-emerald-400"}>
+                                  {f.fsi_value > 0.001 ? "⚠️" : f.fsi_value > 0.0005 ? "⚡" : "✨"}
+                                </span>
+                                <div className="font-semibold text-text-primary dark:text-white text-sm">{f.facility_name}</div>
+                              </div>
+                              <Badge color={f.fsi_value > 0.001 ? "red" : f.fsi_value > 0.0005 ? "yellow" : "emerald"}>
+                                {col.label}
+                              </Badge>
+                            </div>
+                            {/* Bar */}
+                            <ProgressBar value={pct} color={f.fsi_value > 0.001 ? "red" : f.fsi_value > 0.0005 ? "yellow" : "emerald"} className="mt-2" />
+                            <div className="flex justify-between text-xs text-text-muted dark:text-slate-400 mt-2">
+                              <span>FSI</span>
+                              <span id={`fsi-val-${f.facility_id}`} className="font-mono font-bold" style={{ color: col.bar }}>
+                                {isLoading ? (
+                                  <span className="inline-block h-4 w-20 bg-text-muted/20 animate-pulse rounded-md" />
+                                ) : (
+                                  f.fsi_value.toFixed(6)
+                                )}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-slate-500 dark:text-slate-450 pt-2 flex justify-between border-t border-glass-border/40 dark:border-slate-800/40">
+                              <span>Status: {f.fsi_value > 0.001 ? "High Load" : f.fsi_value > 0.0005 ? "Medium Load" : "Nominal"}</span>
+                              <span>Sync: Active</span>
+                            </div>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Right Column: Status Summary Panel */}
+                  <div className="lg:col-span-4">
+                    <Card className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+                      <div>
+                        <h3 className="font-bold text-text-primary dark:text-white text-base">District Status Summary</h3>
+                        <p className="text-text-muted text-xs mt-0.5">Real-time indicators & benchmarks.</p>
+                      </div>
+                      <div className="space-y-4 text-xs">
+                        <div className="flex justify-between items-center py-2 border-b border-glass-border dark:border-slate-800">
+                          <span className="text-slate-500">Last Updated</span>
+                          <span className="font-semibold text-text-primary dark:text-slate-200">Just now</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-glass-border dark:border-slate-800">
+                          <span className="text-slate-500">District Code</span>
+                          <span className="font-mono text-text-primary dark:text-slate-200">{fsiData.district_code}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-2 border-b border-glass-border dark:border-slate-800">
+                          <span className="text-slate-500">Overall FSI Alert</span>
+                          <Badge color={fsiData.average_fsi > 0.001 ? "red" : fsiData.average_fsi > 0.0005 ? "yellow" : "emerald"}>
+                            {fsiData.average_fsi > 0.001 ? "CRITICAL" : fsiData.average_fsi > 0.0005 ? "WARNING" : "HEALTHY"}
                           </Badge>
                         </div>
-                        {/* Bar */}
-                        <ProgressBar value={pct} color={f.fsi_value > 0.001 ? "red" : f.fsi_value > 0.0005 ? "yellow" : "emerald"} className="mt-2" />
-                        <div className="flex justify-between text-xs text-text-muted dark:text-slate-400 mt-2">
-                          <span>FSI</span>
-                          <span id={`fsi-val-${f.facility_id}`} className="font-mono font-bold" style={{ color: col.bar }}>
-                            {f.fsi_value.toFixed(6)}
+                        <div className="flex justify-between items-center py-2">
+                          <span className="text-slate-500">Active Recommendations</span>
+                          <span className="font-semibold text-text-primary dark:text-slate-200">
+                            {aiState === 'active' ? '2 pending' : aiState === 'applied' ? 'Applied' : 'None'}
                           </span>
                         </div>
-                      </Card>
-                    );
-                  })}
+                      </div>
+                    </Card>
+                  </div>
                 </div>
               </>
             ) : (
@@ -563,15 +641,29 @@ export default function DistrictAdminDashboard() {
                       <tr key={f.facility_id} className="border-b border-glass-border dark:border-slate-900/50 hover:bg-surface-alt dark:bg-slate-900/20">
                         <td className="py-3.5 pr-4 font-semibold text-text-primary dark:text-white">{f.facility_name}</td>
                         <td className="py-3.5 pr-4 text-text-muted dark:text-slate-400">{f.facility_type}</td>
-                        <td className="py-3.5 pr-4 text-right font-mono text-text-muted dark:text-slate-300">{f.sanctioned_staff}</td>
+                        <td className="py-3.5 pr-4 text-right font-mono text-text-muted dark:text-slate-300">
+                          {isLoading ? (
+                            <span className="inline-block h-4 w-8 bg-text-muted/20 animate-pulse rounded-md" />
+                          ) : (
+                            f.sanctioned_staff
+                          )}
+                        </td>
                         <td className="py-3.5 pr-4 text-right font-mono">
                           <span className={f.present_today < f.sanctioned_staff ? 'text-amber-300' : 'text-emerald-300'}>
-                            {f.present_today}
+                            {isLoading ? (
+                              <span className="inline-block h-4 w-8 bg-text-muted/20 animate-pulse rounded-md" />
+                            ) : (
+                              f.present_today
+                            )}
                           </span>
                         </td>
                         <td className="py-3.5 pr-4 text-right font-mono">
                           <span className={f.deviation > 0 ? 'text-rose-400' : 'text-emerald-400'}>
-                            {f.deviation > 0 ? `−${f.deviation}` : `+${Math.abs(f.deviation)}`}
+                            {isLoading ? (
+                              <span className="inline-block h-4 w-8 bg-text-muted/20 animate-pulse rounded-md" />
+                            ) : (
+                              f.deviation > 0 ? `−${f.deviation}` : `+${Math.abs(f.deviation)}`
+                            )}
                           </span>
                         </td>
                         <td className="py-3.5 text-right">
@@ -579,7 +671,11 @@ export default function DistrictAdminDashboard() {
                               f.attendance_pct < 80 ? 'bg-amber-950/40 text-amber-300' :
                                 'bg-emerald-950/40 text-emerald-300'
                             }`}>
-                            {f.attendance_pct}%
+                            {isLoading ? (
+                              <span className="inline-block h-3.5 w-10 bg-text-muted/20 animate-pulse rounded-md align-middle" />
+                            ) : (
+                              `${f.attendance_pct}%`
+                            )}
                           </span>
                         </td>
                       </tr>
@@ -676,7 +772,13 @@ export default function DistrictAdminDashboard() {
                     ].map(row => (
                       <div key={row.label} className="flex justify-between items-center text-sm border-b border-glass-border dark:border-slate-900 pb-2">
                         <span className="text-text-muted dark:text-slate-400">{row.label}</span>
-                        <span id={`bm-live-${row.label.replace(/\s+/g, '-').toLowerCase()}`} className="font-mono font-bold text-text-primary dark:text-white">{row.value}</span>
+                        <span id={`bm-live-${row.label.replace(/\s+/g, '-').toLowerCase()}`} className="font-mono font-bold text-text-primary dark:text-white">
+                          {isLoading ? (
+                            <span className="inline-block h-4 w-16 bg-text-muted/20 animate-pulse rounded-md" />
+                          ) : (
+                            row.value
+                          )}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -693,7 +795,13 @@ export default function DistrictAdminDashboard() {
                     ].map(row => (
                       <div key={row.label} className="flex justify-between text-xs">
                         <span className="text-slate-500">{row.label}</span>
-                        <span id={`bm-census-${row.label.replace(/\s+/g, '-').toLowerCase()}`} className="font-mono text-indigo-300">{row.value}</span>
+                        <span id={`bm-census-${row.label.replace(/\s+/g, '-').toLowerCase()}`} className="font-mono text-indigo-300">
+                          {isLoading ? (
+                            <span className="inline-block h-3.5 w-16 bg-text-muted/20 animate-pulse rounded-md" />
+                          ) : (
+                            row.value
+                          )}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -707,7 +815,13 @@ export default function DistrictAdminDashboard() {
                     ].map(row => (
                       <div key={row.label} className="flex justify-between text-xs">
                         <span className="text-slate-500">{row.label}</span>
-                        <span id={`bm-nfhs-${row.label.replace(/\s+/g, '-').toLowerCase()}`} className="font-mono text-teal-300">{String(row.value)}</span>
+                        <span id={`bm-nfhs-${row.label.replace(/\s+/g, '-').toLowerCase()}`} className="font-mono text-teal-300">
+                          {isLoading ? (
+                            <span className="inline-block h-3.5 w-16 bg-text-muted/20 animate-pulse rounded-md" />
+                          ) : (
+                            String(row.value)
+                          )}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -718,19 +832,42 @@ export default function DistrictAdminDashboard() {
                     <div className="space-y-3">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Benchmark Staff Count</span>
-                        <span className="font-mono text-text-muted dark:text-slate-300">{benchmarks.datagovin_reference.sanctioned_staff_count ?? '—'}</span>
+                        <span className="font-mono text-text-muted dark:text-slate-300">
+                          {isLoading ? (
+                            <span className="inline-block h-3.5 w-10 bg-text-muted/20 animate-pulse rounded-md" />
+                          ) : (
+                            benchmarks.datagovin_reference.sanctioned_staff_count ?? '—'
+                          )}
+                        </span>
                       </div>
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Actual Staff Count</span>
-                        <span id="bm-actual-staff" className="font-mono text-text-primary dark:text-white">{benchmarks.comparison.staff_vs_benchmark.actual}</span>
+                        <span id="bm-actual-staff" className="font-mono text-text-primary dark:text-white">
+                          {isLoading ? (
+                            <span className="inline-block h-3.5 w-10 bg-text-muted/20 animate-pulse rounded-md" />
+                          ) : (
+                            benchmarks.comparison.staff_vs_benchmark.actual
+                          )}
+                        </span>
                       </div>
                       <div className={`flex justify-between text-xs font-bold ${benchmarks.comparison.staff_vs_benchmark.gap < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                         <span>Gap vs Benchmark</span>
-                        <span id="bm-staff-gap">{benchmarks.comparison.staff_vs_benchmark.gap > 0 ? '+' : ''}{benchmarks.comparison.staff_vs_benchmark.gap}</span>
+                        <span id="bm-staff-gap">
+                          {isLoading ? (
+                            <span className="inline-block h-3.5 w-10 bg-text-muted/20 animate-pulse rounded-md" />
+                          ) : (
+                            `${benchmarks.comparison.staff_vs_benchmark.gap > 0 ? '+' : ''}${benchmarks.comparison.staff_vs_benchmark.gap}`
+                          )}
+                        </span>
                       </div>
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Supply Lead Time Baseline</span>
-                        <span className="font-mono text-text-muted dark:text-slate-300">{benchmarks.datagovin_reference.supply_lead_time_baseline ?? '—'} days</span>
+                        <span className="font-mono text-text-muted dark:text-slate-300">
+                          {isLoading ? (
+                            <span className="inline-block h-3.5 w-10 bg-text-muted/20 animate-pulse rounded-md" />
+                          ) : (
+                            benchmarks.datagovin_reference.supply_lead_time_baseline ?? '—'
+                          )} days</span>
                       </div>
                     </div>
                   </div>
