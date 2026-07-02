@@ -222,12 +222,12 @@ export default function PHCInchargeDashboard() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="facility-select" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <label htmlFor="facility-select" className="block text-xs font-semibold uppercase tracking-wider text-text-muted dark:text-slate-400">
                 Select Your Facility
               </label>
               <select
                 id="facility-select"
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
                 value={selectedFacility}
                 onChange={(e) => setSelectedFacility(e.target.value)}
               >
@@ -271,7 +271,7 @@ export default function PHCInchargeDashboard() {
 
         <div className="flex items-center gap-4">
           {dashboardData && (
-            <div id="logged-in-facility-badge" className="text-xs bg-slate-900 border border-slate-800 rounded-full px-3 py-1.5 text-slate-300 flex items-center gap-2">
+            <div id="logged-in-facility-badge" className="text-xs bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-full px-3 py-1.5 text-text-muted dark:text-slate-300 flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               {dashboardData.facility_name}
             </div>
@@ -302,8 +302,8 @@ export default function PHCInchargeDashboard() {
             {/* FSI GAUGE */}
             <section className={`md:col-span-6 bg-glass-bg backdrop-blur-md border border-glass-border shadow-glass-dark rounded-3xl p-6 space-y-4 transition-colors duration-500 ${(fsiData?.fsi_value || 0) > 0.001 ? 'border-brand-danger/50 ring-1 ring-brand-danger/30' : ''}`}>
               <div>
-                <h2 className="text-lg font-bold text-white">Facility Stress Index (FSI)</h2>
-                <p className="text-slate-400 text-xs mt-0.5">Real-time daily load vs catchment and beds capacity.</p>
+                <h2 className="text-lg font-bold text-text-primary dark:text-white">Facility Stress Index (FSI)</h2>
+                <p className="text-text-muted dark:text-slate-400 text-xs mt-0.5">Real-time daily load vs catchment and beds capacity.</p>
               </div>
               
               <div className="flex flex-col items-center justify-center py-4 space-y-3">
@@ -330,25 +330,25 @@ export default function PHCInchargeDashboard() {
                     </defs>
                   </svg>
                   <div className="absolute text-center">
-                    <div id="fsi-value-display" className="text-3xl font-extrabold text-white">
+                    <div id="fsi-value-display" className="text-3xl font-extrabold text-text-primary dark:text-white">
                       {(fsiData?.fsi_value || 0).toFixed(4)}
                     </div>
-                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Stress Level</div>
+                    <div className="text-[10px] text-text-muted dark:text-slate-400 font-bold uppercase tracking-wider mt-1">Stress Level</div>
                   </div>
                 </div>
                 
-                <div className="text-xs text-slate-300 grid grid-cols-2 gap-x-6 gap-y-2 w-full pt-4 border-t border-slate-900">
+                <div className="text-xs text-text-muted dark:text-slate-300 grid grid-cols-2 gap-x-6 gap-y-2 w-full pt-4 border-t border-glass-border dark:border-slate-900">
                   <div className="flex justify-between">
                     <span className="text-slate-500">Footfall today:</span>
-                    <span id="fsi-footfall" className="font-bold text-white">{fsiData?.real_time_daily_footfall || 0}</span>
+                    <span id="fsi-footfall" className="font-bold text-text-primary dark:text-white">{fsiData?.real_time_daily_footfall || 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Catchment Pop:</span>
-                    <span id="fsi-population" className="font-bold text-white">{fsiData?.census_catchment_population || 0}</span>
+                    <span id="fsi-population" className="font-bold text-text-primary dark:text-white">{fsiData?.census_catchment_population || 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Beds Baseline:</span>
-                    <span id="fsi-beds" className="font-bold text-white">{fsiData?.available_beds_baseline || 0}</span>
+                    <span id="fsi-beds" className="font-bold text-text-primary dark:text-white">{fsiData?.available_beds_baseline || 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Status:</span>
@@ -385,13 +385,13 @@ export default function PHCInchargeDashboard() {
               {attendanceData ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-slate-950 border border-slate-850 p-3 rounded-2xl text-center">
+                    <div className="bg-surface-alt dark:bg-slate-950 border border-slate-850 p-3 rounded-2xl text-center">
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Sanctioned Staff</span>
                       <span id="sanctioned-staff-count" className="text-2xl font-extrabold text-slate-100 mt-1 block">
                         {attendanceData.sanctioned_staff}
                       </span>
                     </div>
-                    <div className="bg-slate-950 border border-slate-850 p-3 rounded-2xl text-center">
+                    <div className="bg-surface-alt dark:bg-slate-950 border border-slate-850 p-3 rounded-2xl text-center">
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Present Today</span>
                       <span id="present-staff-count" className={`text-2xl font-extrabold mt-1 block ${
                         attendanceData.present_count < attendanceData.sanctioned_staff ? 'text-amber-400' : 'text-emerald-400'
@@ -404,9 +404,9 @@ export default function PHCInchargeDashboard() {
                   <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
                     {attendanceData.attendance && attendanceData.attendance.length > 0 ? (
                       attendanceData.attendance.map((staff: any) => (
-                        <div key={staff.staff_id} className="flex justify-between items-center text-xs bg-slate-950/60 border border-slate-900/60 p-2 rounded-xl">
+                        <div key={staff.staff_id} className="flex justify-between items-center text-xs bg-surface-alt dark:bg-slate-950/60 border border-glass-border dark:border-slate-900/60 p-2 rounded-xl">
                           <div>
-                            <div className="font-semibold text-slate-200">{staff.name}</div>
+                            <div className="font-semibold text-text-primary dark:text-slate-200">{staff.name}</div>
                             <div className="text-[10px] text-slate-500 font-mono">{staff.role}</div>
                           </div>
                           <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${
@@ -430,16 +430,16 @@ export default function PHCInchargeDashboard() {
           </div>
 
           {/* INVENTORY TABLE WITH DRP reorder warning */}
-          <section className="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
+          <section className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
             <div>
-              <h2 className="text-xl font-bold text-white">PHC Pharmacy Inventory</h2>
-              <p className="text-slate-400 text-xs mt-0.5">Real-time stock runway compared against Dynamic Reorder Points (DRP).</p>
+              <h2 className="text-xl font-bold text-text-primary dark:text-white">PHC Pharmacy Inventory</h2>
+              <p className="text-text-muted dark:text-slate-400 text-xs mt-0.5">Real-time stock runway compared against Dynamic Reorder Points (DRP).</p>
             </div>
 
             <div className="overflow-x-auto pt-2">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800 text-slate-500">
+                  <tr className="border-b border-glass-border dark:border-slate-800 text-slate-500">
                     <th className="py-3">Medicine Name</th>
                     <th className="py-3">Current Stock</th>
                     <th className="py-3">Daily Burn Rate</th>
@@ -452,11 +452,11 @@ export default function PHCInchargeDashboard() {
                     inventory.map((item: any) => {
                       const isBelowDrp = item.current_stock < item.drp_value;
                       return (
-                        <tr key={item.id} className="border-b border-slate-900/50 hover:bg-slate-900/10">
-                          <td className="py-3.5 font-semibold text-slate-200">{item.medicine_name}</td>
-                          <td className="py-3.5 font-mono text-slate-300">{item.current_stock}</td>
-                          <td className="py-3.5 text-slate-400">{item.avg_daily_burn_rate} / day</td>
-                          <td className="py-3.5 font-mono text-slate-400">{item.drp_value}</td>
+                        <tr key={item.id} className="border-b border-glass-border dark:border-slate-900/50 hover:bg-surface-alt dark:bg-slate-900/10">
+                          <td className="py-3.5 font-semibold text-text-primary dark:text-slate-200">{item.medicine_name}</td>
+                          <td className="py-3.5 font-mono text-text-muted dark:text-slate-300">{item.current_stock}</td>
+                          <td className="py-3.5 text-text-muted dark:text-slate-400">{item.avg_daily_burn_rate} / day</td>
+                          <td className="py-3.5 font-mono text-text-muted dark:text-slate-400">{item.drp_value}</td>
                           <td className="py-3.5 text-right">
                             {isBelowDrp ? (
                               <span className="inventory-flag inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-950/50 text-rose-300 border border-rose-900/30">
@@ -483,16 +483,16 @@ export default function PHCInchargeDashboard() {
           </section>
 
           {/* REQUEST REDISTRIBUTION */}
-          <section className="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-6">
+          <section className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-6">
             <div>
-              <h2 className="text-xl font-bold text-white">Resource Redistribution</h2>
-              <p className="text-slate-400 text-xs mt-0.5">Submit an urgent request to the District Admin to transfer stock or staff due to overload.</p>
+              <h2 className="text-xl font-bold text-text-primary dark:text-white">Resource Redistribution</h2>
+              <p className="text-text-muted dark:text-slate-400 text-xs mt-0.5">Submit an urgent request to the District Admin to transfer stock or staff due to overload.</p>
             </div>
 
             <form onSubmit={handleRedistributionSubmit} className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between items-end">
-                  <label htmlFor="redistribution-reason-input" className="block text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                  <label htmlFor="redistribution-reason-input" className="block text-[10px] uppercase font-bold tracking-wider text-text-muted dark:text-slate-400">
                     Reason for Redistribution Request
                   </label>
                   <button
@@ -515,7 +515,7 @@ export default function PHCInchargeDashboard() {
                 <textarea
                   id="redistribution-reason-input"
                   rows={3}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
                   placeholder="Describe your current stock shortage, surge load, or staffing deficiency..."
                   value={redistributionReason}
                   onChange={(e) => setRedistributionReason(e.target.value)}
@@ -526,7 +526,7 @@ export default function PHCInchargeDashboard() {
                 id="request-redistribution-button"
                 type="submit"
                 disabled={submittingRedistribution}
-                className="w-full md:w-auto px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 hover:from-emerald-400 hover:to-teal-300 disabled:bg-slate-800 disabled:text-slate-500 transition duration-200 shadow-lg shadow-emerald-500/10"
+                className="w-full md:w-auto px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 hover:from-emerald-400 hover:to-teal-300 disabled:bg-surface dark:bg-slate-800 disabled:text-slate-500 transition duration-200 shadow-lg shadow-emerald-500/10"
               >
                 {submittingRedistribution ? 'Submitting...' : 'Request Redistribution'}
               </button>
@@ -547,18 +547,18 @@ export default function PHCInchargeDashboard() {
         <div className="lg:col-span-4 space-y-8">
           
           {/* Bed Availability Panel */}
-          <section className="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
-            <h2 className="text-base font-bold text-white">Bed Availability Panel</h2>
-            <p className="text-slate-400 text-xs -mt-2">Read-only facility capacity index</p>
+          <section className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
+            <h2 className="text-base font-bold text-text-primary dark:text-white">Bed Availability Panel</h2>
+            <p className="text-text-muted dark:text-slate-400 text-xs -mt-2">Read-only facility capacity index</p>
             
             {dashboardData ? (
-              <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4">
+              <div className="bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl p-5 space-y-4">
                 <div>
                   <div className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Facility Name</div>
-                  <div className="text-sm font-bold text-white mt-0.5">{dashboardData.facility_name}</div>
+                  <div className="text-sm font-bold text-text-primary dark:text-white mt-0.5">{dashboardData.facility_name}</div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-900">
+                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-glass-border dark:border-slate-900">
                   <div>
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Available Beds</div>
                     <div id="available-beds-display" className="text-xl font-extrabold text-emerald-400 mt-0.5">
@@ -567,15 +567,15 @@ export default function PHCInchargeDashboard() {
                   </div>
                   <div>
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Sanctioned Beds</div>
-                    <div className="text-lg font-bold text-slate-300 mt-0.5">
+                    <div className="text-lg font-bold text-text-muted dark:text-slate-300 mt-0.5">
                       {dashboardData.sanctioned_beds}
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-900 flex justify-between items-center text-xs">
+                <div className="pt-2 border-t border-glass-border dark:border-slate-900 flex justify-between items-center text-xs">
                   <span className="text-slate-500">Facility Type:</span>
-                  <span className="font-bold text-white bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                  <span className="font-bold text-text-primary dark:text-white bg-surface-alt dark:bg-slate-900 px-2 py-0.5 rounded border border-glass-border dark:border-slate-800">
                     {dashboardData.facility_type}
                   </span>
                 </div>
@@ -588,17 +588,17 @@ export default function PHCInchargeDashboard() {
           </section>
 
           {/* Live Dispatch Alerts Feed */}
-          <section className="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
+          <section className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-base font-bold text-white">Live Dispatch Alerts</h2>
+              <h2 className="text-base font-bold text-text-primary dark:text-white">Live Dispatch Alerts</h2>
               <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             </div>
-            <p className="text-slate-400 text-xs -mt-2">Incoming emergency transport alerts scoped to your facility.</p>
+            <p className="text-text-muted dark:text-slate-400 text-xs -mt-2">Incoming emergency transport alerts scoped to your facility.</p>
 
             <div id="dispatch-alerts-container" className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
               {dashboardData?.active_dispatches && dashboardData.active_dispatches.length > 0 ? (
                 dashboardData.active_dispatches.map((d: any) => (
-                  <div key={d.id} className="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
+                  <div key={d.id} className="bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl p-4 space-y-3">
                     <div className="flex justify-between items-start">
                       <span className="inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-rose-950 text-rose-300 border border-rose-900/30">
                         Ambulance Alert
@@ -608,11 +608,11 @@ export default function PHCInchargeDashboard() {
                       </span>
                     </div>
 
-                    <p className="text-slate-200 text-xs leading-relaxed font-semibold">
+                    <p className="text-text-primary dark:text-slate-200 text-xs leading-relaxed font-semibold">
                       {d.symptom}
                     </p>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-slate-900 text-xs">
+                    <div className="flex items-center justify-between pt-2 border-t border-glass-border dark:border-slate-900 text-xs">
                       <div>
                         <span className="text-[10px] text-slate-500 uppercase tracking-widest block font-medium">Status</span>
                         <span className={`font-semibold capitalize ${d.status === 'enroute' ? 'text-amber-400' : 'text-rose-400'}`}>
@@ -642,7 +642,7 @@ export default function PHCInchargeDashboard() {
                   </div>
                 ))
               ) : (
-                <div className="text-slate-500 text-xs italic text-center py-8 bg-slate-950/20 border border-slate-900 rounded-2xl">
+                <div className="text-slate-500 text-xs italic text-center py-8 bg-surface-alt dark:bg-slate-950/20 border border-glass-border dark:border-slate-900 rounded-2xl">
                   No active incoming dispatches.
                 </div>
               )}
@@ -654,7 +654,7 @@ export default function PHCInchargeDashboard() {
       </main>
       
       <footer className="w-full text-center py-6 text-[10px] text-text-muted border-t border-glass-border mt-12 bg-surface">
-        PulseDesk PHC In-charge Dashboard © {new Date().getFullYear()} • Intelligent Resource Logistics
+        PulseDesk © {new Date().getFullYear()} • Made by Team CodeCraft
       </footer>
     </div>
   );

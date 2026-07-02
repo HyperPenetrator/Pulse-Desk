@@ -298,12 +298,12 @@ export default function ReceptionistDashboard() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="facility-select" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <label htmlFor="facility-select" className="block text-xs font-semibold uppercase tracking-wider text-text-muted dark:text-slate-400">
                 Select Your Facility
               </label>
               <select
                 id="facility-select"
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
                 value={selectedFacility}
                 onChange={(e) => setSelectedFacility(e.target.value)}
               >
@@ -347,7 +347,7 @@ export default function ReceptionistDashboard() {
 
         <div className="flex items-center gap-4">
           {dashboardData && (
-            <div id="logged-in-facility-badge" className="text-xs bg-slate-900 border border-slate-800 rounded-full px-3 py-1.5 text-slate-300 flex items-center gap-2">
+            <div id="logged-in-facility-badge" className="text-xs bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-full px-3 py-1.5 text-text-muted dark:text-slate-300 flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               {dashboardData.facility_name}
             </div>
@@ -382,11 +382,11 @@ export default function ReceptionistDashboard() {
 
             <form onSubmit={handleWalkInSubmit} className="grid grid-cols-1 md:grid-cols-12 gap-4">
               <div className="md:col-span-5 space-y-1">
-                <label htmlFor="patient-name-input" className="block text-[10px] uppercase font-bold tracking-wider text-slate-400">Patient Name</label>
+                <label htmlFor="patient-name-input" className="block text-[10px] uppercase font-bold tracking-wider text-text-muted dark:text-slate-400">Patient Name</label>
                 <input
                   id="patient-name-input"
                   type="text"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
                   placeholder="Enter full name"
                   value={patientName}
                   onChange={(e) => setPatientName(e.target.value)}
@@ -394,11 +394,11 @@ export default function ReceptionistDashboard() {
               </div>
 
               <div className="md:col-span-2 space-y-1">
-                <label htmlFor="patient-age-input" className="block text-[10px] uppercase font-bold tracking-wider text-slate-400">Age</label>
+                <label htmlFor="patient-age-input" className="block text-[10px] uppercase font-bold tracking-wider text-text-muted dark:text-slate-400">Age</label>
                 <input
                   id="patient-age-input"
                   type="number"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
                   placeholder="Years"
                   value={patientAge}
                   onChange={(e) => setPatientAge(e.target.value)}
@@ -406,10 +406,10 @@ export default function ReceptionistDashboard() {
               </div>
 
               <div className="md:col-span-2 space-y-1">
-                <label htmlFor="patient-gender-select" className="block text-[10px] uppercase font-bold tracking-wider text-slate-400">Gender</label>
+                <label htmlFor="patient-gender-select" className="block text-[10px] uppercase font-bold tracking-wider text-text-muted dark:text-slate-400">Gender</label>
                 <select
                   id="patient-gender-select"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
                   value={patientGender}
                   onChange={(e) => setPatientGender(e.target.value)}
                 >
@@ -424,18 +424,18 @@ export default function ReceptionistDashboard() {
                   id="register-patient-button"
                   type="submit"
                   disabled={registering}
-                  className="w-full py-2.5 rounded-xl font-semibold text-xs uppercase tracking-wide bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 hover:from-emerald-400 hover:to-teal-300 disabled:bg-slate-800 disabled:text-slate-500 transition duration-200"
+                  className="w-full py-2.5 rounded-xl font-semibold text-xs uppercase tracking-wide bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 hover:from-emerald-400 hover:to-teal-300 disabled:bg-surface dark:bg-slate-800 disabled:text-slate-500 transition duration-200"
                 >
                   {registering ? 'Registering...' : 'Register'}
                 </button>
               </div>
 
               <div className="md:col-span-12 space-y-1">
-                <label htmlFor="patient-symptoms-input" className="block text-[10px] uppercase font-bold tracking-wider text-slate-400">Symptoms & Clinical Details</label>
+                <label htmlFor="patient-symptoms-input" className="block text-[10px] uppercase font-bold tracking-wider text-text-muted dark:text-slate-400">Symptoms & Clinical Details</label>
                 <textarea
                   id="patient-symptoms-input"
                   rows={2}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
                   placeholder="Describe patient condition/symptoms..."
                   value={patientSymptoms}
                   onChange={(e) => setPatientSymptoms(e.target.value)}
@@ -452,13 +452,13 @@ export default function ReceptionistDashboard() {
             )}
 
             {/* Walk-in Queue Table */}
-            <div className="space-y-3 pt-4 border-t border-slate-900">
-              <h3 className="text-sm font-bold text-slate-200">Today's Walk-in Queue</h3>
+            <div className="space-y-3 pt-4 border-t border-glass-border dark:border-slate-900">
+              <h3 className="text-sm font-bold text-text-primary dark:text-slate-200">Today's Walk-in Queue</h3>
               
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-800 text-slate-500">
+                    <tr className="border-b border-glass-border dark:border-slate-800 text-slate-500">
                       <th className="py-2.5">Time</th>
                       <th className="py-2.5">Patient / Symptoms</th>
                       <th className="py-2.5 text-right">Triage Severity</th>
@@ -467,16 +467,16 @@ export default function ReceptionistDashboard() {
                   <tbody id="walk-in-queue-body">
                     {dashboardData?.walk_ins && dashboardData.walk_ins.length > 0 ? (
                       dashboardData.walk_ins.map((w: any) => (
-                        <tr key={w.id} className="border-b border-slate-900/50 hover:bg-slate-900/10">
-                          <td className="py-2.5 text-slate-400 font-mono">
+                        <tr key={w.id} className="border-b border-glass-border dark:border-slate-900/50 hover:bg-surface-alt dark:bg-slate-900/10">
+                          <td className="py-2.5 text-text-muted dark:text-slate-400 font-mono">
                             {new Date(w.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </td>
                           <td className="py-2.5 pr-4">
-                            <span className="font-semibold text-slate-200">{w.symptoms}</span>
+                            <span className="font-semibold text-text-primary dark:text-slate-200">{w.symptoms}</span>
                           </td>
                           <td className="py-2.5 text-right">
                             <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
-                              w.severity === 'emergency' ? 'bg-rose-950 text-rose-300 border border-rose-900/30' : 'bg-slate-950 text-slate-400 border border-slate-800'
+                              w.severity === 'emergency' ? 'bg-rose-950 text-rose-300 border border-rose-900/30' : 'bg-surface-alt dark:bg-slate-950 text-text-muted dark:text-slate-400 border border-glass-border dark:border-slate-800'
                             }`}>
                               {w.severity}
                             </span>
@@ -497,19 +497,19 @@ export default function ReceptionistDashboard() {
           </section>
 
           {/* Voice Log Entry Panel */}
-          <section className="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-6">
+          <section className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <h2 className="text-xl font-bold text-text-primary dark:text-white flex items-center gap-2">
                   Voice-Log Terminal 
                   {transcribing && <span className="flex h-2.5 w-2.5 relative"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span></span>}
                 </h2>
-                <p className="text-slate-400 text-xs mt-1">Speak inventory updates, footfall count, or attendance logs.</p>
+                <p className="text-text-muted dark:text-slate-400 text-xs mt-1">Speak inventory updates, footfall count, or attendance logs.</p>
               </div>
             </div>
 
             {/* Simulated Canvas Waveform */}
-            <div className="w-full h-16 bg-slate-950 border border-slate-800/50 rounded-xl overflow-hidden flex items-center justify-center gap-1 opacity-80">
+            <div className="w-full h-16 bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800/50 rounded-xl overflow-hidden flex items-center justify-center gap-1 opacity-80">
               {Array.from({ length: 30 }).map((_, i) => (
                 <div key={i} className={`w-1 bg-emerald-500/40 rounded-full ${transcribing ? 'animate-pulse-critical bg-rose-500' : ''}`} style={{ height: transcribing ? `${Math.max(20, Math.random() * 100)}%` : '10%' }} />
               ))}
@@ -517,14 +517,14 @@ export default function ReceptionistDashboard() {
 
             <form onSubmit={handleVoiceTranscribeSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label htmlFor="voice-log-text-input" className="block text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                <label htmlFor="voice-log-text-input" className="block text-[10px] uppercase font-bold tracking-wider text-text-muted dark:text-slate-400">
                   Simulate Speech / Audio Transcription (Local Mock)
                 </label>
                 <div className="flex gap-3">
                   <input
                     id="voice-log-text-input"
                     type="text"
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                    className="flex-1 bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
                     placeholder="E.g., OPD footfall is 120 patients today"
                     value={voiceText}
                     onChange={(e) => setVoiceText(e.target.value)}
@@ -534,7 +534,7 @@ export default function ReceptionistDashboard() {
                     id="voice-transcribe-submit-button"
                     type="submit"
                     disabled={transcribing}
-                    className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl px-5 font-semibold text-xs uppercase tracking-wider disabled:bg-slate-800 disabled:text-slate-500 transition"
+                    className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl px-5 font-semibold text-xs uppercase tracking-wider disabled:bg-surface dark:bg-slate-800 disabled:text-slate-500 transition"
                   >
                     {transcribing ? 'Processing...' : 'Voice Log'}
                   </button>
@@ -547,21 +547,21 @@ export default function ReceptionistDashboard() {
                 <button
                   type="button"
                   onClick={() => setVoiceText('OPD footfall is 120 patients today')}
-                  className="text-[10px] bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-lg px-2.5 py-1 text-slate-400 transition"
+                  className="text-[10px] bg-surface-alt dark:bg-slate-950 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg px-2.5 py-1 text-text-muted dark:text-slate-400 transition"
                 >
                   Footfall: 120
                 </button>
                 <button
                   type="button"
                   onClick={() => setVoiceText('Paracetamol stock khatam ho gaya hai')}
-                  className="text-[10px] bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-lg px-2.5 py-1 text-slate-400 transition"
+                  className="text-[10px] bg-surface-alt dark:bg-slate-950 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg px-2.5 py-1 text-text-muted dark:text-slate-400 transition"
                 >
                   Stock: Paracetamol (Empty)
                 </button>
                 <button
                   type="button"
                   onClick={() => setVoiceText('Amoxicillin stock is 45 packages')}
-                  className="text-[10px] bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-lg px-2.5 py-1 text-slate-400 transition"
+                  className="text-[10px] bg-surface-alt dark:bg-slate-950 hover:bg-surface dark:bg-slate-800 border border-glass-border dark:border-slate-800 rounded-lg px-2.5 py-1 text-text-muted dark:text-slate-400 transition"
                 >
                   Stock: Amoxicillin 45
                 </button>
@@ -575,13 +575,13 @@ export default function ReceptionistDashboard() {
             )}
 
             {transcribeResult && (
-              <div id="transcription-result-card" className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">Transcription Round-trip Details</h4>
+              <div id="transcription-result-card" className="bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl p-5 space-y-4">
+                <h4 className="text-xs font-bold text-text-primary dark:text-white uppercase tracking-wider">Transcription Round-trip Details</h4>
                 
                 <div className="grid grid-cols-2 gap-4 text-xs">
                   <div className="col-span-2">
                     <span className="text-slate-500">Transcribed Text:</span>
-                    <p id="transcribed-text-display" className="font-semibold text-slate-200 mt-0.5">{transcribeResult.transcribed_text}</p>
+                    <p id="transcribed-text-display" className="font-semibold text-text-primary dark:text-slate-200 mt-0.5">{transcribeResult.transcribed_text}</p>
                   </div>
                   <div>
                     <span className="text-slate-500">Detected Intent:</span>
@@ -589,12 +589,12 @@ export default function ReceptionistDashboard() {
                   </div>
                   <div>
                     <span className="text-slate-500">Confidence Score:</span>
-                    <p className="font-mono text-slate-400 mt-0.5">{transcribeResult.confidence_score.toFixed(2)}</p>
+                    <p className="font-mono text-text-muted dark:text-slate-400 mt-0.5">{transcribeResult.confidence_score.toFixed(2)}</p>
                   </div>
                   {transcribeResult.extracted_entity && (
                     <div>
                       <span className="text-slate-500">Extracted Entity:</span>
-                      <p id="extracted-entity-display" className="font-semibold text-slate-200 mt-0.5">{transcribeResult.extracted_entity}</p>
+                      <p id="extracted-entity-display" className="font-semibold text-text-primary dark:text-slate-200 mt-0.5">{transcribeResult.extracted_entity}</p>
                     </div>
                   )}
                   {transcribeResult.extracted_value !== null && (
@@ -614,18 +614,18 @@ export default function ReceptionistDashboard() {
         <div className="lg:col-span-5 space-y-8">
           
           {/* Bed Availability Panel */}
-          <section className="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
-            <h2 className="text-base font-bold text-white">Bed Availability Panel</h2>
-            <p className="text-slate-400 text-xs -mt-2">Read-only facility capacity index</p>
+          <section className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
+            <h2 className="text-base font-bold text-text-primary dark:text-white">Bed Availability Panel</h2>
+            <p className="text-text-muted dark:text-slate-400 text-xs -mt-2">Read-only facility capacity index</p>
             
             {dashboardData ? (
-              <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4">
+              <div className="bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl p-5 space-y-4">
                 <div>
                   <div className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Facility Name</div>
-                  <div className="text-sm font-bold text-white mt-0.5">{dashboardData.facility_name}</div>
+                  <div className="text-sm font-bold text-text-primary dark:text-white mt-0.5">{dashboardData.facility_name}</div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-900">
+                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-glass-border dark:border-slate-900">
                   <div>
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Available Beds</div>
                     <div id="available-beds-display" className="text-xl font-extrabold text-emerald-400 mt-0.5">
@@ -634,15 +634,15 @@ export default function ReceptionistDashboard() {
                   </div>
                   <div>
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Sanctioned Beds</div>
-                    <div className="text-lg font-bold text-slate-300 mt-0.5">
+                    <div className="text-lg font-bold text-text-muted dark:text-slate-300 mt-0.5">
                       {dashboardData.sanctioned_beds}
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-900 flex justify-between items-center text-xs">
+                <div className="pt-2 border-t border-glass-border dark:border-slate-900 flex justify-between items-center text-xs">
                   <span className="text-slate-500">Facility Type:</span>
-                  <span className="font-bold text-white bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                  <span className="font-bold text-text-primary dark:text-white bg-surface-alt dark:bg-slate-900 px-2 py-0.5 rounded border border-glass-border dark:border-slate-800">
                     {dashboardData.facility_type}
                   </span>
                 </div>
@@ -657,17 +657,17 @@ export default function ReceptionistDashboard() {
 
         {/* Live Dispatch Alerts Feed */}
         <div className="lg:col-span-12 space-y-8">
-          <section className="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
+          <section className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-base font-bold text-white">Live Dispatch Alerts</h2>
+              <h2 className="text-base font-bold text-text-primary dark:text-white">Live Dispatch Alerts</h2>
               <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500" />
             </div>
-            <p className="text-slate-400 text-xs -mt-2">Incoming emergency transport alerts scoped to your facility.</p>
+            <p className="text-text-muted dark:text-slate-400 text-xs -mt-2">Incoming emergency transport alerts scoped to your facility.</p>
 
             <div id="dispatch-alerts-container" className="space-y-4 max-h-[400px] overflow-y-auto pr-1 grid grid-cols-1 md:grid-cols-2 gap-4">
               {dashboardData?.active_dispatches && dashboardData.active_dispatches.length > 0 ? (
                 dashboardData.active_dispatches.map((d: any) => (
-                  <div key={d.id} className="bg-slate-950 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 space-y-3 transition duration-150">
+                  <div key={d.id} className="bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 space-y-3 transition duration-150">
                     <div className="flex justify-between items-start">
                       <span className="inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-rose-950 text-rose-300 border border-rose-900/30">
                         Ambulance Alert
@@ -677,11 +677,11 @@ export default function ReceptionistDashboard() {
                       </span>
                     </div>
 
-                    <p className="text-slate-200 text-xs leading-relaxed font-semibold">
+                    <p className="text-text-primary dark:text-slate-200 text-xs leading-relaxed font-semibold">
                       {d.symptom}
                     </p>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-slate-900 text-xs">
+                    <div className="flex items-center justify-between pt-2 border-t border-glass-border dark:border-slate-900 text-xs">
                       <div>
                         <span className="text-[10px] text-slate-500 uppercase tracking-widest block font-medium">Status</span>
                         <span className={`font-semibold capitalize ${d.status === 'enroute' ? 'text-amber-400' : 'text-rose-400'}`}>
@@ -711,7 +711,7 @@ export default function ReceptionistDashboard() {
                   </div>
                 ))
               ) : (
-                <div className="col-span-1 md:col-span-2 text-slate-500 text-xs italic text-center py-8 bg-slate-950/20 border border-slate-900 rounded-2xl">
+                <div className="col-span-1 md:col-span-2 text-slate-500 text-xs italic text-center py-8 bg-surface-alt dark:bg-slate-950/20 border border-glass-border dark:border-slate-900 rounded-2xl">
                   No active incoming dispatches.
                 </div>
               )}

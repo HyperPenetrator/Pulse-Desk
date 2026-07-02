@@ -95,7 +95,7 @@ export default function DashboardSwitcher() {
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-indigo-500/50 hover:scale-105 active:scale-95 transition-all duration-200 border border-indigo-400/20"
+        className="w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 text-text-primary dark:text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-indigo-500/50 hover:scale-105 active:scale-95 transition-all duration-200 border border-indigo-400/20"
         title="Switch Dashboard"
         id="dashboard-switcher-trigger"
       >
@@ -106,14 +106,14 @@ export default function DashboardSwitcher() {
 
       {/* Modal / Popover */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl text-slate-200 backdrop-blur-md animate-in fade-in slide-in-from-bottom-5 duration-200">
-          <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-800">
+        <div className="absolute bottom-16 right-0 w-80 bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-3xl p-5 shadow-2xl text-text-primary dark:text-slate-200 backdrop-blur-md animate-in fade-in slide-in-from-bottom-5 duration-200">
+          <div className="flex justify-between items-center mb-4 pb-2 border-b border-glass-border dark:border-slate-800">
             <h3 className="font-bold text-sm tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">
               Dashboard Gateway
             </h3>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-slate-500 hover:text-slate-300 transition text-xs"
+              className="text-slate-500 hover:text-text-muted dark:text-slate-300 transition text-xs"
             >
               Close
             </button>
@@ -122,11 +122,11 @@ export default function DashboardSwitcher() {
           <form onSubmit={handleSwitch} className="space-y-3">
             {/* Target Role Selector */}
             <div>
-              <label className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold block mb-1">Target Role</label>
+              <label className="text-[10px] text-text-muted dark:text-slate-400 uppercase tracking-widest font-semibold block mb-1">Target Role</label>
               <select
                 value={role}
                 onChange={(e: any) => setRole(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-200"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-text-primary dark:text-slate-200"
               >
                 <option value="receptionist">Receptionist</option>
                 <option value="phc_incharge">PHC In-charge</option>
@@ -136,7 +136,7 @@ export default function DashboardSwitcher() {
 
             {/* Scope Identifier */}
             <div>
-              <label className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold block mb-1">
+              <label className="text-[10px] text-text-muted dark:text-slate-400 uppercase tracking-widest font-semibold block mb-1">
                 {role === 'district_admin' ? 'District Code' : 'Facility ID'}
               </label>
               <input
@@ -144,19 +144,19 @@ export default function DashboardSwitcher() {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder={role === 'district_admin' ? 'E.g. KA-BNG' : 'E.g. uuid-string-here'}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-200"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-text-primary dark:text-slate-200"
               />
             </div>
 
             {/* Password */}
             <div>
-              <label className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold block mb-1">Secret Key / Password</label>
+              <label className="text-[10px] text-text-muted dark:text-slate-400 uppercase tracking-widest font-semibold block mb-1">Secret Key / Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="E.g. admin123"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-slate-200"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 text-text-primary dark:text-slate-200"
               />
             </div>
 

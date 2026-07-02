@@ -172,30 +172,30 @@ export default function DistrictAdminDashboard() {
   // ── Login screen ────────────────────────────────────────────────────────────
   if (!token) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 selection:bg-violet-500 selection:text-black">
+      <div className="min-h-screen bg-surface-alt dark:bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 selection:bg-violet-500 selection:text-black">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#1e1b4b_0%,_transparent_60%)] pointer-events-none" />
 
-        <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl relative z-10">
+        <div className="w-full max-w-md bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-3xl p-8 shadow-2xl relative z-10">
           <div className="flex flex-col items-center mb-8">
             <div className="h-14 w-14 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-violet-500/25 mb-4">
-              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-7 h-7 text-text-primary dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
               </svg>
             </div>
             <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-violet-400 to-indigo-300 bg-clip-text text-transparent">
               PulseDesk
             </h1>
-            <p className="text-xs text-slate-400 mt-1 uppercase tracking-widest">District Administrator</p>
+            <p className="text-xs text-text-muted dark:text-slate-400 mt-1 uppercase tracking-widest">District Administrator</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="district-select" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <label htmlFor="district-select" className="block text-xs font-semibold uppercase tracking-wider text-text-muted dark:text-slate-400">
                 Select Your District
               </label>
               <select
                 id="district-select"
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
                 value={selectedDistrict}
                 onChange={(e) => setSelectedDistrict(e.target.value)}
               >
@@ -212,7 +212,7 @@ export default function DistrictAdminDashboard() {
             <button
               id="login-button"
               type="submit"
-              className="w-full py-4 rounded-2xl font-bold text-sm tracking-wide uppercase transition duration-200 bg-gradient-to-r from-violet-600 to-indigo-500 hover:from-violet-500 hover:to-indigo-400 text-white shadow-lg shadow-violet-500/20"
+              className="w-full py-4 rounded-2xl font-bold text-sm tracking-wide uppercase transition duration-200 bg-gradient-to-r from-violet-600 to-indigo-500 hover:from-violet-500 hover:to-indigo-400 text-text-primary dark:text-white shadow-lg shadow-violet-500/20"
             >
               Sign In as District Admin
             </button>
@@ -230,7 +230,7 @@ export default function DistrictAdminDashboard() {
       <header className="relative w-full border-b border-glass-border bg-glass-bg backdrop-blur-md px-6 py-4 flex justify-between items-center z-20 shadow-glass-light">
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-violet-500/20">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-text-primary dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
             </svg>
           </div>
@@ -238,12 +238,12 @@ export default function DistrictAdminDashboard() {
             <h1 className="text-lg font-bold tracking-tight bg-gradient-to-r from-violet-400 to-indigo-300 bg-clip-text text-transparent">
               PulseDesk
             </h1>
-            <p className="text-[9px] text-slate-400 uppercase tracking-widest -mt-0.5">District Admin Console</p>
+            <p className="text-[9px] text-text-muted dark:text-slate-400 uppercase tracking-widest -mt-0.5">District Admin Console</p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          <div id="district-badge" className="text-xs bg-slate-900 border border-violet-900/50 rounded-full px-3 py-1.5 text-violet-300 flex items-center gap-2">
+          <div id="district-badge" className="text-xs bg-surface-alt dark:bg-slate-900 border border-violet-900/50 rounded-full px-3 py-1.5 text-violet-300 flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-violet-500 animate-pulse" />
             District: {districtCode}
           </div>
@@ -272,7 +272,7 @@ export default function DistrictAdminDashboard() {
             className={`flex items-center gap-1.5 px-4 py-3 text-xs font-semibold uppercase tracking-wider whitespace-nowrap border-b-2 transition-all duration-150 ${
               activeScreen === s.id
                 ? 'border-violet-500 text-violet-300'
-                : 'border-transparent text-slate-500 hover:text-slate-300'
+                : 'border-transparent text-slate-500 hover:text-text-muted dark:text-slate-300'
             }`}
           >
             <span>{s.icon}</span>{s.label}
@@ -313,14 +313,14 @@ export default function DistrictAdminDashboard() {
                           {aiState === 'applying' ? '⏳' : aiState === 'applied' ? '✅' : '✨'}
                         </span>
                       </div>
-                      <h3 className="text-lg font-bold text-white">
+                      <h3 className="text-lg font-bold text-text-primary dark:text-white">
                         {aiState === 'applying' ? 'Applying Recommendations...' : aiState === 'applied' ? 'Recommendations Applied' : 'AI Resource Recommendations'}
                       </h3>
                     </div>
                     
                     {aiState === 'active' && (
                       <>
-                        <div className="text-sm text-slate-300 space-y-2">
+                        <div className="text-sm text-text-muted dark:text-slate-300 space-y-2">
                           <p className="flex items-start gap-2">
                             <span className="text-violet-500">•</span>
                             <span>Recommend shifting 2 ambulances to <span className="text-violet-300 font-semibold">North Sector</span> based on predicted FSI surge.</span>
@@ -332,7 +332,7 @@ export default function DistrictAdminDashboard() {
                         </div>
                         <div className="mt-5 flex gap-3">
                           <button onClick={handleApplyAI} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold rounded-xl transition shadow-lg shadow-violet-500/20">Apply Recommendations</button>
-                          <button onClick={handleDismissAI} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition">Dismiss</button>
+                          <button onClick={handleDismissAI} className="px-4 py-2 bg-surface dark:bg-slate-800 hover:bg-slate-700 text-text-muted dark:text-slate-300 text-xs font-bold rounded-xl transition">Dismiss</button>
                         </div>
                       </>
                     )}
@@ -347,23 +347,23 @@ export default function DistrictAdminDashboard() {
 
                 {/* Summary bar */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 text-center">
+                  <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-4 text-center">
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Total Facilities</div>
-                    <div id="fsi-total-facilities" className="text-3xl font-extrabold text-white mt-1">{fsiData.facilities.length}</div>
+                    <div id="fsi-total-facilities" className="text-3xl font-extrabold text-text-primary dark:text-white mt-1">{fsiData.facilities.length}</div>
                   </div>
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 text-center">
+                  <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-4 text-center">
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">District Avg FSI</div>
                     <div id="fsi-avg-value" className="text-3xl font-extrabold mt-1" style={{ color: fsiColor(fsiData.average_fsi).bar }}>
                       {fsiData.average_fsi.toFixed(6)}
                     </div>
                   </div>
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 text-center">
+                  <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-4 text-center">
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Critical Facilities</div>
                     <div className="text-3xl font-extrabold text-rose-400 mt-1">
                       {fsiData.facilities.filter(f => f.fsi_value > 0.001).length}
                     </div>
                   </div>
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 text-center">
+                  <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-4 text-center">
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Normal Facilities</div>
                     <div className="text-3xl font-extrabold text-emerald-400 mt-1">
                       {fsiData.facilities.filter(f => f.fsi_value <= 0.0005).length}
@@ -379,11 +379,11 @@ export default function DistrictAdminDashboard() {
                     return (
                       <Card
                         key={f.facility_id}
-                        className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 space-y-3 hover:border-slate-600 transition"
+                        className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-5 space-y-3 hover:border-slate-600 transition"
                       >
                         <div className="flex justify-between items-start">
                           <div>
-                            <div className="font-semibold text-white text-sm">{f.facility_name}</div>
+                            <div className="font-semibold text-text-primary dark:text-white text-sm">{f.facility_name}</div>
                           </div>
                           <Badge color={f.fsi_value > 0.001 ? "red" : f.fsi_value > 0.0005 ? "yellow" : "emerald"}>
                             {col.label}
@@ -391,7 +391,7 @@ export default function DistrictAdminDashboard() {
                         </div>
                         {/* Bar */}
                         <ProgressBar value={pct} color={f.fsi_value > 0.001 ? "red" : f.fsi_value > 0.0005 ? "yellow" : "emerald"} className="mt-2" />
-                        <div className="flex justify-between text-xs text-slate-400 mt-2">
+                        <div className="flex justify-between text-xs text-text-muted dark:text-slate-400 mt-2">
                           <span>FSI</span>
                           <span id={`fsi-val-${f.facility_id}`} className="font-mono font-bold" style={{ color: col.bar }}>
                             {f.fsi_value.toFixed(6)}
@@ -412,18 +412,18 @@ export default function DistrictAdminDashboard() {
         {activeScreen === 'underperforming' && (
           <section id="screen-underperforming" className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-white">Underperforming Facility Flags</h2>
-              <p className="text-slate-400 text-sm mt-1">Facilities breaching FSI or attendance thresholds. Click to drill down.</p>
+              <h2 className="text-2xl font-bold text-text-primary dark:text-white">Underperforming Facility Flags</h2>
+              <p className="text-text-muted dark:text-slate-400 text-sm mt-1">Facilities breaching FSI or attendance thresholds. Click to drill down.</p>
             </div>
 
             {/* Drill-down modal */}
             {drillFacility && (
               <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setDrillFacility(null)}>
-                <div className="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+                <div className="bg-surface-alt dark:bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl" onClick={e => e.stopPropagation()}>
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="font-bold text-white text-lg">{drillFacility.facility_name}</h3>
-                      <p className="text-xs text-slate-400 uppercase">{drillFacility.facility_type} · Drill-down</p>
+                      <h3 className="font-bold text-text-primary dark:text-white text-lg">{drillFacility.facility_name}</h3>
+                      <p className="text-xs text-text-muted dark:text-slate-400 uppercase">{drillFacility.facility_type} · Drill-down</p>
                     </div>
                     <button onClick={() => setDrillFacility(null)} className="text-slate-500 hover:text-white text-lg">✕</button>
                   </div>
@@ -432,9 +432,9 @@ export default function DistrictAdminDashboard() {
                       <div key={i} className="bg-rose-950/30 border border-rose-900/40 rounded-2xl p-4">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-xs font-bold text-rose-300 uppercase tracking-wider">{t.metric}</span>
-                          <span className="font-mono text-sm text-white">{typeof t.value === 'number' ? t.value.toFixed(4) : t.value}</span>
+                          <span className="font-mono text-sm text-text-primary dark:text-white">{typeof t.value === 'number' ? t.value.toFixed(4) : t.value}</span>
                         </div>
-                        <p className="text-xs text-slate-400">{t.detail}</p>
+                        <p className="text-xs text-text-muted dark:text-slate-400">{t.detail}</p>
                         <div className="mt-2 text-[10px] text-rose-400/70">Threshold: {t.threshold}</div>
                       </div>
                     ))}
@@ -448,12 +448,12 @@ export default function DistrictAdminDashboard() {
                 {underperforming.map(f => (
                   <div
                     key={f.facility_id}
-                    className="bg-slate-900/50 border border-rose-900/40 rounded-2xl p-5 hover:border-rose-700/60 transition cursor-pointer"
+                    className="bg-surface-alt dark:bg-slate-900/50 border border-rose-900/40 rounded-2xl p-5 hover:border-rose-700/60 transition cursor-pointer"
                     onClick={() => setDrillFacility(f)}
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <div className="font-semibold text-white">{f.facility_name}</div>
+                        <div className="font-semibold text-text-primary dark:text-white">{f.facility_name}</div>
                         <div className="text-xs text-slate-500 mt-0.5">{f.facility_type}</div>
                       </div>
                       <div className="flex gap-2 items-center">
@@ -471,7 +471,7 @@ export default function DistrictAdminDashboard() {
             ) : (
               <div className="text-center py-16">
                 <div className="text-5xl mb-4">✅</div>
-                <div id="no-flags-message" className="text-slate-400 text-sm">No underperforming facilities in <span className="text-violet-300 font-mono">{districtCode}</span>.</div>
+                <div id="no-flags-message" className="text-text-muted dark:text-slate-400 text-sm">No underperforming facilities in <span className="text-violet-300 font-mono">{districtCode}</span>.</div>
               </div>
             )}
           </section>
@@ -481,8 +481,8 @@ export default function DistrictAdminDashboard() {
         {activeScreen === 'redistribution' && (
           <section id="screen-redistribution" className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-white">Redistribution Requests</h2>
-              <p className="text-slate-400 text-sm mt-1">Pending resource requests from PHC In-charges in your district.</p>
+              <h2 className="text-2xl font-bold text-text-primary dark:text-white">Redistribution Requests</h2>
+              <p className="text-text-muted dark:text-slate-400 text-sm mt-1">Pending resource requests from PHC In-charges in your district.</p>
             </div>
 
             {actionMsg && (
@@ -494,11 +494,11 @@ export default function DistrictAdminDashboard() {
             {redistRequests.length > 0 ? (
               <div id="redistribution-requests-list" className="space-y-4">
                 {redistRequests.map(r => (
-                  <div key={r.alert_id} className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+                  <div key={r.alert_id} className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-5">
                     <div className="flex justify-between items-start gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <span className="font-semibold text-white">{r.facility_name}</span>
+                          <span className="font-semibold text-text-primary dark:text-white">{r.facility_name}</span>
                           <span className={`text-[10px] font-bold uppercase tracking-wider border px-2 py-0.5 rounded-full ${
                             r.status === 'active'   ? 'bg-amber-500/10 border-amber-800/40 text-amber-300' :
                             r.status === 'approved' ? 'bg-emerald-500/10 border-emerald-800/40 text-emerald-300' :
@@ -507,7 +507,7 @@ export default function DistrictAdminDashboard() {
                             {r.status}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-400 leading-relaxed">{r.description}</p>
+                        <p className="text-xs text-text-muted dark:text-slate-400 leading-relaxed">{r.description}</p>
                         <p className="text-[10px] text-slate-600 mt-2">{r.created_at ? new Date(r.created_at).toLocaleString('en-IN') : ''}</p>
                       </div>
 
@@ -543,15 +543,15 @@ export default function DistrictAdminDashboard() {
         {activeScreen === 'attendance' && (
           <section id="screen-attendance" className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-white">Attendance Deviation Report</h2>
-              <p className="text-slate-400 text-sm mt-1">Staff present today vs sanctioned strength across all facilities.</p>
+              <h2 className="text-2xl font-bold text-text-primary dark:text-white">Attendance Deviation Report</h2>
+              <p className="text-text-muted dark:text-slate-400 text-sm mt-1">Staff present today vs sanctioned strength across all facilities.</p>
             </div>
 
             {attendance.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-800 text-slate-500 uppercase tracking-wider text-[10px]">
+                    <tr className="border-b border-glass-border dark:border-slate-800 text-slate-500 uppercase tracking-wider text-[10px]">
                       <th className="py-3 pr-4">Facility</th>
                       <th className="py-3 pr-4">Type</th>
                       <th className="py-3 pr-4 text-right">Sanctioned</th>
@@ -562,10 +562,10 @@ export default function DistrictAdminDashboard() {
                   </thead>
                   <tbody id="attendance-deviation-table">
                     {attendance.map(f => (
-                      <tr key={f.facility_id} className="border-b border-slate-900/50 hover:bg-slate-900/20">
-                        <td className="py-3.5 pr-4 font-semibold text-white">{f.facility_name}</td>
-                        <td className="py-3.5 pr-4 text-slate-400">{f.facility_type}</td>
-                        <td className="py-3.5 pr-4 text-right font-mono text-slate-300">{f.sanctioned_staff}</td>
+                      <tr key={f.facility_id} className="border-b border-glass-border dark:border-slate-900/50 hover:bg-surface-alt dark:bg-slate-900/20">
+                        <td className="py-3.5 pr-4 font-semibold text-text-primary dark:text-white">{f.facility_name}</td>
+                        <td className="py-3.5 pr-4 text-text-muted dark:text-slate-400">{f.facility_type}</td>
+                        <td className="py-3.5 pr-4 text-right font-mono text-text-muted dark:text-slate-300">{f.sanctioned_staff}</td>
                         <td className="py-3.5 pr-4 text-right font-mono">
                           <span className={f.present_today < f.sanctioned_staff ? 'text-amber-300' : 'text-emerald-300'}>
                             {f.present_today}
@@ -600,8 +600,8 @@ export default function DistrictAdminDashboard() {
         {activeScreen === 'fleet' && (
           <section id="screen-fleet" className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-white">Ambulance & Dispatch Fleet Status</h2>
-              <p className="text-slate-400 text-sm mt-1">Live dispatch status across all facilities in <span className="text-violet-300 font-mono">{districtCode}</span>.</p>
+              <h2 className="text-2xl font-bold text-text-primary dark:text-white">Ambulance & Dispatch Fleet Status</h2>
+              <p className="text-text-muted dark:text-slate-400 text-sm mt-1">Live dispatch status across all facilities in <span className="text-violet-300 font-mono">{districtCode}</span>.</p>
             </div>
 
             {fleet ? (
@@ -613,14 +613,14 @@ export default function DistrictAdminDashboard() {
                     { key: 'enroute', label: 'En Route', color: 'blue', count: fleet.enroute.length },
                     { key: 'arrived', label: 'Arrived', color: 'emerald', count: fleet.arrived.length },
                   ].map(s => (
-                    <div key={s.key} className={`bg-slate-900/50 border rounded-2xl px-6 py-4 flex gap-3 items-center border-${s.color}-900/40`}>
+                    <div key={s.key} className={`bg-surface-alt dark:bg-slate-900/50 border rounded-2xl px-6 py-4 flex gap-3 items-center border-${s.color}-900/40`}>
                       <span className={`text-3xl font-extrabold text-${s.color}-400`}>{s.count}</span>
-                      <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">{s.label}</span>
+                      <span className="text-xs text-text-muted dark:text-slate-400 uppercase tracking-wider font-semibold">{s.label}</span>
                     </div>
                   ))}
-                  <div className="bg-slate-900/50 border border-slate-800 rounded-2xl px-6 py-4 flex gap-3 items-center">
-                    <span className="text-3xl font-extrabold text-slate-300">{fleet.total}</span>
-                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Total</span>
+                  <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl px-6 py-4 flex gap-3 items-center">
+                    <span className="text-3xl font-extrabold text-text-muted dark:text-slate-300">{fleet.total}</span>
+                    <span className="text-xs text-text-muted dark:text-slate-400 uppercase tracking-wider font-semibold">Total</span>
                   </div>
                 </div>
 
@@ -632,15 +632,15 @@ export default function DistrictAdminDashboard() {
                     { key: 'arrived' as const, label: '🟢 Arrived', color: 'emerald' },
                   ].map(col => (
                     <div key={col.key}>
-                      <h3 className="text-sm font-bold text-slate-300 mb-3">{col.label}</h3>
+                      <h3 className="text-sm font-bold text-text-muted dark:text-slate-300 mb-3">{col.label}</h3>
                       <div id={`fleet-${col.key}-list`} className="space-y-3">
                         {fleet[col.key].length === 0 ? (
                           <div className="text-slate-600 text-xs italic text-center py-4">None</div>
                         ) : (
                           fleet[col.key].map(d => (
-                            <div key={d.dispatch_id} className={`bg-slate-900/50 border border-${col.color}-900/30 rounded-xl p-4`}>
-                              <div className="font-semibold text-sm text-white">{d.facility_name}</div>
-                              {d.symptom && <div className="text-xs text-slate-400 mt-1 truncate">{d.symptom}</div>}
+                            <div key={d.dispatch_id} className={`bg-surface-alt dark:bg-slate-900/50 border border-${col.color}-900/30 rounded-xl p-4`}>
+                              <div className="font-semibold text-sm text-text-primary dark:text-white">{d.facility_name}</div>
+                              {d.symptom && <div className="text-xs text-text-muted dark:text-slate-400 mt-1 truncate">{d.symptom}</div>}
                               {d.eta && <div className="text-[10px] text-slate-500 mt-1.5">ETA: {new Date(d.eta).toLocaleTimeString('en-IN')}</div>}
                             </div>
                           ))
@@ -660,14 +660,14 @@ export default function DistrictAdminDashboard() {
         {activeScreen === 'benchmarks' && (
           <section id="screen-benchmarks" className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-white">Benchmark Comparison View</h2>
-              <p className="text-slate-400 text-sm mt-1">Live district metrics vs NFHS / Census / data.gov.in reference baselines.</p>
+              <h2 className="text-2xl font-bold text-text-primary dark:text-white">Benchmark Comparison View</h2>
+              <p className="text-text-muted dark:text-slate-400 text-sm mt-1">Live district metrics vs NFHS / Census / data.gov.in reference baselines.</p>
             </div>
 
             {benchmarks ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Live vs Reference cards */}
-                <div className="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 space-y-5">
+                <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-3xl p-6 space-y-5">
                   <h3 className="text-sm font-bold text-violet-300 uppercase tracking-wider">Live District Metrics</h3>
                   <div className="space-y-3">
                     {[
@@ -677,9 +677,9 @@ export default function DistrictAdminDashboard() {
                       { label: 'Attendance %', value: `${benchmarks.live_metrics.attendance_pct}%` },
                       { label: 'Total Facilities', value: benchmarks.total_facilities },
                     ].map(row => (
-                      <div key={row.label} className="flex justify-between items-center text-sm border-b border-slate-900 pb-2">
-                        <span className="text-slate-400">{row.label}</span>
-                        <span id={`bm-live-${row.label.replace(/\s+/g, '-').toLowerCase()}`} className="font-mono font-bold text-white">{row.value}</span>
+                      <div key={row.label} className="flex justify-between items-center text-sm border-b border-glass-border dark:border-slate-900 pb-2">
+                        <span className="text-text-muted dark:text-slate-400">{row.label}</span>
+                        <span id={`bm-live-${row.label.replace(/\s+/g, '-').toLowerCase()}`} className="font-mono font-bold text-text-primary dark:text-white">{row.value}</span>
                       </div>
                     ))}
                   </div>
@@ -687,7 +687,7 @@ export default function DistrictAdminDashboard() {
 
                 <div className="space-y-6">
                   {/* Census Reference */}
-                  <div className="bg-slate-900/50 border border-indigo-900/40 rounded-3xl p-5 space-y-3">
+                  <div className="bg-surface-alt dark:bg-slate-900/50 border border-indigo-900/40 rounded-3xl p-5 space-y-3">
                     <h3 className="text-sm font-bold text-indigo-300 uppercase tracking-wider">Census Reference</h3>
                     {[
                       { label: 'Catchment Population', value: benchmarks.census_reference.catchment_population?.toLocaleString('en-IN') ?? '—' },
@@ -702,7 +702,7 @@ export default function DistrictAdminDashboard() {
                   </div>
 
                   {/* NFHS Reference */}
-                  <div className="bg-slate-900/50 border border-teal-900/40 rounded-3xl p-5 space-y-3">
+                  <div className="bg-surface-alt dark:bg-slate-900/50 border border-teal-900/40 rounded-3xl p-5 space-y-3">
                     <h3 className="text-sm font-bold text-teal-300 uppercase tracking-wider">NFHS Reference</h3>
                     {[
                       { label: 'Seasonal Risk Weight', value: benchmarks.nfhs_reference.seasonal_vector_weight ?? '—' },
@@ -716,16 +716,16 @@ export default function DistrictAdminDashboard() {
                   </div>
 
                   {/* data.gov.in comparison */}
-                  <div className="bg-slate-900/50 border border-violet-900/40 rounded-3xl p-5 space-y-3">
+                  <div className="bg-surface-alt dark:bg-slate-900/50 border border-violet-900/40 rounded-3xl p-5 space-y-3">
                     <h3 className="text-sm font-bold text-violet-300 uppercase tracking-wider">data.gov.in Comparison</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Benchmark Staff Count</span>
-                        <span className="font-mono text-slate-300">{benchmarks.datagovin_reference.sanctioned_staff_count ?? '—'}</span>
+                        <span className="font-mono text-text-muted dark:text-slate-300">{benchmarks.datagovin_reference.sanctioned_staff_count ?? '—'}</span>
                       </div>
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Actual Staff Count</span>
-                        <span id="bm-actual-staff" className="font-mono text-white">{benchmarks.comparison.staff_vs_benchmark.actual}</span>
+                        <span id="bm-actual-staff" className="font-mono text-text-primary dark:text-white">{benchmarks.comparison.staff_vs_benchmark.actual}</span>
                       </div>
                       <div className={`flex justify-between text-xs font-bold ${benchmarks.comparison.staff_vs_benchmark.gap < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                         <span>Gap vs Benchmark</span>
@@ -733,7 +733,7 @@ export default function DistrictAdminDashboard() {
                       </div>
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Supply Lead Time Baseline</span>
-                        <span className="font-mono text-slate-300">{benchmarks.datagovin_reference.supply_lead_time_baseline ?? '—'} days</span>
+                        <span className="font-mono text-text-muted dark:text-slate-300">{benchmarks.datagovin_reference.supply_lead_time_baseline ?? '—'} days</span>
                       </div>
                     </div>
                   </div>
