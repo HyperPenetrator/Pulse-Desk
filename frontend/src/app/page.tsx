@@ -224,7 +224,7 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={fetchGPSLocation}
-                      className="text-xs bg-slate-900 border border-slate-800 hover:bg-slate-800 rounded-lg px-3 py-1.5 transition"
+                      className="text-xs bg-slate-900 border border-slate-800 hover:bg-slate-800 rounded-lg px-3 py-1.5 transition text-white"
                     >
                       Retry GPS
                     </button>
@@ -242,21 +242,21 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={() => handlePresetLocation('bangalore')}
-                      className="text-[11px] bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg py-1.5 text-center transition"
+                      className="text-[11px] bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg py-1.5 text-center transition text-white"
                     >
                       Bangalore (Near)
                     </button>
                     <button
                       type="button"
                       onClick={() => handlePresetLocation('mumbai')}
-                      className="text-[11px] bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg py-1.5 text-center transition"
+                      className="text-[11px] bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg py-1.5 text-center transition text-white"
                     >
                       Mumbai (Far)
                     </button>
                     <button
                       type="button"
                       onClick={() => handlePresetLocation('rural')}
-                      className="text-[11px] bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg py-1.5 text-center transition"
+                      className="text-[11px] bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg py-1.5 text-center transition text-white"
                     >
                       Remote Rural
                     </button>
