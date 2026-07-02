@@ -25,6 +25,8 @@ This is a monorepo consisting of:
 4. Install dependencies: `pip install -r requirements.txt`
 5. Start the backend: `uvicorn main:app --reload`
    - The API will be available at http://localhost:8000
+6. Use the following snippet to load mock data: `/opt/venv/bin/python seed.py`
+
 
 ### Frontend Setup
 1. Navigate to the frontend directory: `cd frontend`
