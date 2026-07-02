@@ -68,8 +68,8 @@
   --card-bg: #FFFFFF;
   
   /* Typography */
-  --text-primary: #020617;
-  --text-muted: #475569;
+  --text-primary: #000000;
+  --text-muted: #000000;
   
   /* Brand Colors */
   --accent-color: #2563eb;
@@ -104,7 +104,7 @@
   
   /* Typography */
   --text-primary: #FFFFFF;
-  --text-muted: #94A3B8;
+  --text-muted: #FFFFFF;
   
   /* Brand Colors */
   --accent-color: #3b82f6;
