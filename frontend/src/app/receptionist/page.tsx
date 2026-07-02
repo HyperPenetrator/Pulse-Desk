@@ -303,7 +303,7 @@ export default function ReceptionistDashboard() {
               </label>
               <select
                 id="facility-select"
-                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-text-primary dark:text-slate-100 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
                 value={selectedFacility}
                 onChange={(e) => setSelectedFacility(e.target.value)}
               >
@@ -355,7 +355,7 @@ export default function ReceptionistDashboard() {
           <button
             id="logout-button"
             onClick={handleLogout}
-            className="text-xs bg-rose-950/20 hover:bg-rose-950/40 border border-rose-900/40 text-rose-300 rounded-xl px-3.5 py-1.5 transition"
+            className="text-xs bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 text-rose-800 dark:text-rose-300 rounded-xl px-3.5 py-1.5 transition"
           >
             Sign Out
           </button>
@@ -363,7 +363,7 @@ export default function ReceptionistDashboard() {
       </header>
 
       {error && (
-        <div className="bg-rose-950/30 border-b border-rose-900/50 px-6 py-3 text-sm text-rose-300 text-center">
+        <div className="bg-rose-50 dark:bg-rose-950/30 border-b border-rose-200 dark:border-rose-900/50 px-6 py-3 text-sm text-rose-800 dark:text-rose-300 text-center">
           ⚠️ Connection Error: {error}
         </div>
       )}
@@ -386,7 +386,7 @@ export default function ReceptionistDashboard() {
                 <input
                   id="patient-name-input"
                   type="text"
-                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm text-text-primary dark:text-slate-100 focus:outline-none focus:border-emerald-500"
                   placeholder="Enter full name"
                   value={patientName}
                   onChange={(e) => setPatientName(e.target.value)}
@@ -398,7 +398,7 @@ export default function ReceptionistDashboard() {
                 <input
                   id="patient-age-input"
                   type="number"
-                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm text-text-primary dark:text-slate-100 focus:outline-none focus:border-emerald-500"
                   placeholder="Years"
                   value={patientAge}
                   onChange={(e) => setPatientAge(e.target.value)}
@@ -409,7 +409,7 @@ export default function ReceptionistDashboard() {
                 <label htmlFor="patient-gender-select" className="block text-[10px] uppercase font-bold tracking-wider text-text-muted dark:text-slate-400">Gender</label>
                 <select
                   id="patient-gender-select"
-                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm text-text-primary dark:text-slate-100 focus:outline-none focus:border-emerald-500"
                   value={patientGender}
                   onChange={(e) => setPatientGender(e.target.value)}
                 >
@@ -435,7 +435,7 @@ export default function ReceptionistDashboard() {
                 <textarea
                   id="patient-symptoms-input"
                   rows={2}
-                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-text-primary dark:text-slate-100 focus:outline-none focus:border-emerald-500"
                   placeholder="Describe patient condition/symptoms..."
                   value={patientSymptoms}
                   onChange={(e) => setPatientSymptoms(e.target.value)}
@@ -445,7 +445,7 @@ export default function ReceptionistDashboard() {
 
             {registerMessage && (
               <div id="registration-status-message" className={`p-3 rounded-xl text-xs border ${
-                registerMessage.includes('Error') ? 'bg-rose-950/20 border-rose-900/40 text-rose-300' : 'bg-emerald-950/20 border-emerald-900/40 text-emerald-300'
+                registerMessage.includes('Error') ? 'bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/40 text-rose-800 dark:text-rose-300' : 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/40 text-emerald-800 dark:text-emerald-300'
               }`}>
                 {registerMessage}
               </div>
@@ -476,7 +476,7 @@ export default function ReceptionistDashboard() {
                           </td>
                           <td className="py-2.5 text-right">
                             <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
-                              w.severity === 'emergency' ? 'bg-rose-950 text-rose-300 border border-rose-900/30' : 'bg-surface-alt dark:bg-slate-950 text-text-muted dark:text-slate-400 border border-glass-border dark:border-slate-800'
+                              w.severity === 'emergency' ? 'bg-rose-50 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-900/30' : 'bg-surface-alt dark:bg-slate-950 text-text-muted dark:text-slate-400 border border-glass-border dark:border-slate-800'
                             }`}>
                               {w.severity}
                             </span>
@@ -524,7 +524,7 @@ export default function ReceptionistDashboard() {
                   <input
                     id="voice-log-text-input"
                     type="text"
-                    className="flex-1 bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                    className="flex-1 bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm text-text-primary dark:text-slate-100 focus:outline-none focus:border-emerald-500"
                     placeholder="E.g., OPD footfall is 120 patients today"
                     value={voiceText}
                     onChange={(e) => setVoiceText(e.target.value)}
@@ -569,7 +569,7 @@ export default function ReceptionistDashboard() {
             </form>
 
             {voiceError && (
-              <div id="voice-error-display" className="bg-rose-950/20 border border-rose-900/40 rounded-xl p-3 text-xs text-rose-300">
+              <div id="voice-error-display" className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 rounded-xl p-3 text-xs text-rose-800 dark:text-rose-300">
                 Error: {voiceError}
               </div>
             )}
@@ -669,7 +669,7 @@ export default function ReceptionistDashboard() {
                 dashboardData.active_dispatches.map((d: any) => (
                   <div key={d.id} className="bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 space-y-3 transition duration-150">
                     <div className="flex justify-between items-start">
-                      <span className="inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-rose-950 text-rose-300 border border-rose-900/30">
+                      <span className="inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-rose-50 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-900/30">
                         Ambulance Alert
                       </span>
                       <span className="text-[10px] text-slate-500 font-mono">

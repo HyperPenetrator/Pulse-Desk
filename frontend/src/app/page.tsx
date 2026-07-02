@@ -160,7 +160,7 @@ export default function Home() {
               <textarea
                 id="symptom-input"
                 rows={4}
-                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-text-primary dark:text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
                 placeholder="Describe what you are feeling (e.g. 'Severe chest pain radiating to left arm', 'High fever and mild cough'..."
                 value={symptom}
                 onChange={(e) => setSymptom(e.target.value)}
@@ -281,7 +281,7 @@ export default function Home() {
                       <input
                         id="address-input"
                         type="text"
-                        className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+                        className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-text-primary dark:text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
                         placeholder="Enter city or area name..."
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
@@ -295,7 +295,7 @@ export default function Home() {
                           id="latitude-input"
                           type="number"
                           step="any"
-                          className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none"
+                          className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-text-primary dark:text-slate-100 focus:outline-none"
                           value={latitude || ''}
                           onChange={(e) => setLatitude(e.target.value ? parseFloat(e.target.value) : null)}
                         />
@@ -306,7 +306,7 @@ export default function Home() {
                           id="longitude-input"
                           type="number"
                           step="any"
-                          className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none"
+                          className="w-full bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-text-primary dark:text-slate-100 focus:outline-none"
                           value={longitude || ''}
                           onChange={(e) => setLongitude(e.target.value ? parseFloat(e.target.value) : null)}
                         />
@@ -318,7 +318,7 @@ export default function Home() {
             </div>
 
             {error && (
-              <div id="error-message" className="bg-rose-950/30 border border-rose-900/50 rounded-xl px-4 py-3 text-sm text-rose-300">
+              <div id="error-message" className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 rounded-xl px-4 py-3 text-sm text-rose-800 dark:text-rose-300">
                 {error}
               </div>
             )}
@@ -371,7 +371,7 @@ export default function Home() {
               {result && (
                 <div id="result-container" className="w-full text-left space-y-6">
                   <div className="text-center pb-2 border-b border-glass-border dark:border-slate-800">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${result.severity === 'emergency' ? 'bg-rose-950 text-rose-300 border border-rose-900/50' : 'bg-blue-950 text-blue-300 border border-blue-900/50'
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${result.severity === 'emergency' ? 'bg-rose-50 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-900/50' : 'bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-900/50'
                       }`}>
                       Triage: {result.severity}
                     </span>

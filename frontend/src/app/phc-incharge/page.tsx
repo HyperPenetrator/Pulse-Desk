@@ -232,7 +232,7 @@ export default function PHCInchargeDashboard() {
               </label>
               <select
                 id="facility-select"
-                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-text-primary dark:text-slate-100 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
                 value={selectedFacility}
                 onChange={(e) => setSelectedFacility(e.target.value)}
               >
@@ -284,7 +284,7 @@ export default function PHCInchargeDashboard() {
           <button
             id="logout-button"
             onClick={handleLogout}
-            className="text-xs bg-rose-950/20 hover:bg-rose-950/40 border border-rose-900/40 text-rose-300 rounded-xl px-3.5 py-1.5 transition"
+            className="text-xs bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 text-rose-800 dark:text-rose-300 rounded-xl px-3.5 py-1.5 transition"
           >
             Sign Out
           </button>
@@ -292,7 +292,7 @@ export default function PHCInchargeDashboard() {
       </header>
 
       {error && (
-        <div className="bg-rose-950/30 border-b border-rose-900/50 px-6 py-3 text-sm text-rose-300 text-center">
+        <div className="bg-rose-50 dark:bg-rose-950/30 border-b border-rose-200 dark:border-rose-900/50 px-6 py-3 text-sm text-rose-800 dark:text-rose-300 text-center">
           ⚠️ Connection Error: {error}
         </div>
       )}
@@ -384,7 +384,7 @@ export default function PHCInchargeDashboard() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Status:</span>
-                    <span className={`font-bold ${(fsiData?.fsi_value || 0) > 0.001 ? 'text-rose-400' : 'text-emerald-400'
+                    <span className={`font-bold ${(fsiData?.fsi_value || 0) > 0.001 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
                       }`}>
                       {isLoading ? (
                         <span className="inline-block h-4 w-16 bg-text-muted/20 animate-pulse rounded-md align-middle" />
@@ -410,14 +410,14 @@ export default function PHCInchargeDashboard() {
               </div>
 
               {attendanceData && attendanceData.present_count < attendanceData.sanctioned_staff && (
-                <div className="bg-rose-950/40 border border-rose-900/60 rounded-xl p-3 flex items-center gap-3">
+                <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 rounded-xl p-3 flex items-center gap-3">
                   <span className="relative flex h-3 w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
                   </span>
                   <div>
-                    <h3 className="text-rose-300 text-xs font-bold uppercase tracking-wider">Critical Staffing Alert</h3>
-                    <p className="text-rose-400/80 text-[10px]">Operating below sanctioned strength. High risk of queue pileup.</p>
+                    <h3 className="text-rose-800 dark:text-rose-300 text-xs font-bold uppercase tracking-wider">Critical Staffing Alert</h3>
+                    <p className="text-rose-700/80 dark:text-rose-400/80 text-[10px]">Operating below sanctioned strength. High risk of queue pileup.</p>
                   </div>
                 </div>
               )}
@@ -427,7 +427,7 @@ export default function PHCInchargeDashboard() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-surface-alt dark:bg-slate-950 border border-slate-850 p-3 rounded-2xl text-center">
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Sanctioned Staff</span>
-                      <span id="sanctioned-staff-count" className="text-2xl font-extrabold text-slate-100 mt-1 block">
+                      <span id="sanctioned-staff-count" className="text-2xl font-extrabold text-text-primary dark:text-slate-100 mt-1 block">
                         {isLoading ? (
                           <span className="inline-block h-6 w-12 bg-text-muted/20 animate-pulse rounded-md" />
                         ) : (
@@ -437,7 +437,7 @@ export default function PHCInchargeDashboard() {
                     </div>
                     <div className="bg-surface-alt dark:bg-slate-950 border border-slate-850 p-3 rounded-2xl text-center">
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Present Today</span>
-                      <span id="present-staff-count" className={`text-2xl font-extrabold mt-1 block ${attendanceData.present_count < attendanceData.sanctioned_staff ? 'text-amber-400' : 'text-emerald-400'
+                      <span id="present-staff-count" className={`text-2xl font-extrabold mt-1 block ${attendanceData.present_count < attendanceData.sanctioned_staff ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
                         }`}>
                         {isLoading ? (
                           <span className="inline-block h-6 w-12 bg-text-muted/20 animate-pulse rounded-md" />
@@ -457,8 +457,8 @@ export default function PHCInchargeDashboard() {
                             <div className="text-[10px] text-slate-500 font-mono">{staff.role}</div>
                           </div>
                           <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${staff.status === 'Present'
-                              ? 'bg-emerald-950/30 border-emerald-900/30 text-emerald-400'
-                              : 'bg-rose-950/30 border-rose-900/30 text-rose-400'
+                              ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/30 text-emerald-800 dark:text-emerald-400'
+                              : 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/30 text-rose-800 dark:text-rose-400'
                             }`}>
                             {staff.status}
                           </span>
@@ -586,7 +586,7 @@ export default function PHCInchargeDashboard() {
                       if (!shortages && staffShort === 0) draft += `- Anticipated surge load based on recent footfall trends.`;
                       setRedistributionReason(draft);
                     }}
-                    className="text-[10px] flex items-center gap-1.5 bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/30 rounded-lg px-2.5 py-1.5 transition uppercase tracking-wider font-bold"
+                    className="text-[10px] flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-500/30 border border-indigo-200 dark:border-indigo-500/30 rounded-lg px-2.5 py-1.5 transition uppercase tracking-wider font-bold"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                     Auto-Fill Request
@@ -595,7 +595,7 @@ export default function PHCInchargeDashboard() {
                 <textarea
                   id="redistribution-reason-input"
                   rows={3}
-                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-sm text-text-primary dark:text-slate-100 focus:outline-none focus:border-emerald-500"
                   placeholder="Describe your current stock shortage, surge load, or staffing deficiency..."
                   value={redistributionReason}
                   onChange={(e) => setRedistributionReason(e.target.value)}
@@ -613,7 +613,7 @@ export default function PHCInchargeDashboard() {
             </form>
 
             {redistributionMessage && (
-              <div id="redistribution-status-message" className={`p-4 rounded-2xl text-xs border ${redistributionMessage.includes('Error') ? 'bg-rose-950/20 border-rose-900/40 text-rose-300' : 'bg-emerald-950/20 border-emerald-900/40 text-emerald-300'
+              <div id="redistribution-status-message" className={`p-4 rounded-2xl text-xs border ${redistributionMessage.includes('Error') ? 'bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/40 text-rose-800 dark:text-rose-300' : 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/40 text-emerald-800 dark:text-emerald-300'
                 }`}>
                 {redistributionMessage}
               </div>
@@ -679,7 +679,7 @@ export default function PHCInchargeDashboard() {
                 dashboardData.active_dispatches.map((d: any) => (
                   <div key={d.id} className="bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl p-4 space-y-3">
                     <div className="flex justify-between items-start">
-                      <span className="inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-rose-950 text-rose-300 border border-rose-900/30">
+                      <span className="inline-block px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-rose-50 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-900/30">
                         Ambulance Alert
                       </span>
                       <span className="text-[10px] text-slate-500 font-mono">

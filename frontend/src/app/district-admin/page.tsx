@@ -35,9 +35,9 @@ const SCREENS: { id: Screen; label: string; icon: string }[] = [
 
 // ── FSI colour helper ─────────────────────────────────────────────────────────
 function fsiColor(val: number) {
-  if (val > 0.001) return { bar: '#ef4444', badge: 'bg-rose-500/20 text-rose-300 border-rose-800/40', label: 'Critical' };
-  if (val > 0.0005) return { bar: '#f59e0b', badge: 'bg-amber-500/20 text-amber-300 border-amber-800/40', label: 'Elevated' };
-  return { bar: '#10b981', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-800/40', label: 'Normal' };
+  if (val > 0.001) return { bar: '#ef4444', badge: 'bg-rose-50 dark:bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800/40', label: 'Critical' };
+  if (val > 0.0005) return { bar: '#f59e0b', badge: 'bg-amber-50 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40', label: 'Elevated' };
+  return { bar: '#10b981', badge: 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40', label: 'Normal' };
 }
 
 export default function DistrictAdminDashboard() {
@@ -177,7 +177,7 @@ export default function DistrictAdminDashboard() {
   // ── Login screen ────────────────────────────────────────────────────────────
   if (!token) {
     return (
-      <div className="min-h-screen bg-surface-alt dark:bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 selection:bg-violet-500 selection:text-black">
+      <div className="min-h-screen bg-surface-alt dark:bg-slate-950 text-text-primary dark:text-slate-100 flex flex-col items-center justify-center p-6 selection:bg-violet-500 selection:text-black">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#1e1b4b_0%,_transparent_60%)] pointer-events-none" />
 
         <div className="w-full max-w-md bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-slate-800 rounded-3xl p-8 shadow-2xl relative z-10">
@@ -200,7 +200,7 @@ export default function DistrictAdminDashboard() {
               </label>
               <select
                 id="district-select"
-                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
+                className="w-full bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl px-4 py-3 text-text-primary dark:text-slate-100 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition"
                 value={selectedDistrict}
                 onChange={(e) => setSelectedDistrict(e.target.value)}
               >
@@ -211,7 +211,7 @@ export default function DistrictAdminDashboard() {
             </div>
 
             {error && (
-              <div className="bg-rose-950/30 border border-rose-900/40 rounded-xl px-4 py-3 text-xs text-rose-300">{error}</div>
+              <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40 rounded-xl px-4 py-3 text-xs text-rose-800 dark:text-rose-300">{error}</div>
             )}
 
             <button
@@ -248,14 +248,14 @@ export default function DistrictAdminDashboard() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div id="district-badge" className="text-xs bg-surface-alt dark:bg-slate-900 border border-violet-900/50 rounded-full px-3 py-1.5 text-violet-300 flex items-center gap-2">
+          <div id="district-badge" className="text-xs bg-surface-alt dark:bg-slate-900 border border-glass-border dark:border-violet-900/50 rounded-full px-3 py-1.5 text-violet-700 dark:text-violet-300 flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-violet-500 animate-pulse" />
             District: {districtCode}
           </div>
           <button
             id="logout-button"
             onClick={handleLogout}
-            className="text-xs bg-rose-950/20 hover:bg-rose-950/40 border border-rose-900/40 text-rose-300 rounded-xl px-3.5 py-1.5 transition"
+            className="text-xs bg-rose-50 dark:bg-rose-950/20 hover:bg-rose-100 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40 text-rose-800 dark:text-rose-300 rounded-xl px-3.5 py-1.5 transition"
           >
             Sign Out
           </button>
@@ -274,9 +274,9 @@ export default function DistrictAdminDashboard() {
             key={s.id}
             id={`tab-${s.id}`}
             onClick={() => setActiveScreen(s.id)}
-            className={`relative flex items-center gap-1.5 px-4 py-3 text-xs font-semibold uppercase tracking-wider whitespace-nowrap transition-all duration-150 ${activeScreen === s.id
-                ? 'text-violet-300'
-                : 'text-slate-500 hover:text-text-muted dark:text-slate-300'
+            className={`flex items-center gap-1.5 px-4 py-3 text-xs font-semibold uppercase tracking-wider whitespace-nowrap border-b-2 transition-all duration-150 ${activeScreen === s.id
+                ? 'border-violet-500 text-violet-700 dark:text-violet-300'
+                : 'border-transparent text-slate-500 hover:text-text-muted dark:text-slate-300'
               }`}
           >
             <span>{s.icon}</span>{s.label}
@@ -289,13 +289,6 @@ export default function DistrictAdminDashboard() {
               <span className="ml-1 bg-rose-600 text-white text-[10px] rounded-full px-1.5 py-0.5 font-bold">
                 {underperforming.length}
               </span>
-            )}
-            {activeScreen === s.id && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-[2px] bg-violet-500"
-                transition={{ type: "spring", stiffness: 380, damping: 30 }}
-              />
             )}
           </button>
         ))}
@@ -320,7 +313,7 @@ export default function DistrictAdminDashboard() {
                     <div className="absolute inset-0 bg-gradient-to-r from-brand-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                     <div className="flex items-center gap-3 mb-4">
                       <div className={`h-8 w-8 rounded-lg ${aiState === 'applied' ? 'bg-emerald-600/20' : 'bg-violet-600/20'} flex items-center justify-center`}>
-                        <span className={`text-lg ${aiState === 'active' ? 'text-violet-400 animate-pulse' : aiState === 'applying' ? 'text-violet-400 animate-spin' : 'text-emerald-400'}`}>
+                        <span className={`text-lg ${aiState === 'active' ? 'text-violet-600 dark:text-violet-400 animate-pulse' : aiState === 'applying' ? 'text-violet-600 dark:text-violet-400 animate-spin' : 'text-emerald-600 dark:text-emerald-400'}`}>
                           {aiState === 'applying' ? '⏳' : aiState === 'applied' ? '✅' : '✨'}
                         </span>
                       </div>
@@ -349,7 +342,7 @@ export default function DistrictAdminDashboard() {
                     )}
 
                     {aiState === 'applied' && (
-                      <div className="text-sm text-emerald-300/80">
+                      <div className="text-sm text-emerald-800/80 dark:text-emerald-300/80">
                         <p>Resources have been successfully optimized across the district.</p>
                       </div>
                     )}
@@ -380,7 +373,7 @@ export default function DistrictAdminDashboard() {
                   </div>
                   <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-4 text-center">
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Critical Facilities</div>
-                    <div className="text-3xl font-extrabold text-rose-400 mt-1">
+                    <div className="text-3xl font-extrabold text-rose-600 dark:text-rose-400 mt-1">
                       {isLoading ? (
                         <span className="inline-block h-8 w-10 bg-text-muted/20 animate-pulse rounded-md" />
                       ) : (
@@ -390,7 +383,7 @@ export default function DistrictAdminDashboard() {
                   </div>
                   <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-2xl p-4 text-center">
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Normal Facilities</div>
-                    <div className="text-3xl font-extrabold text-emerald-400 mt-1">
+                    <div className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">
                       {isLoading ? (
                         <span className="inline-block h-8 w-10 bg-text-muted/20 animate-pulse rounded-md" />
                       ) : (
@@ -415,7 +408,7 @@ export default function DistrictAdminDashboard() {
                           >
                             <div className="flex justify-between items-start">
                               <div className="flex items-center gap-2">
-                                <span className={f.fsi_value > 0.001 ? "text-rose-400" : f.fsi_value > 0.0005 ? "text-amber-400" : "text-emerald-400"}>
+                                <span className={f.fsi_value > 0.001 ? "text-rose-600 dark:text-rose-400" : f.fsi_value > 0.0005 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}>
                                   {f.fsi_value > 0.001 ? "⚠️" : f.fsi_value > 0.0005 ? "⚡" : "✨"}
                                 </span>
                                 <div className="font-semibold text-text-primary dark:text-white text-sm">{f.facility_name}</div>
@@ -506,13 +499,13 @@ export default function DistrictAdminDashboard() {
                   </div>
                   <div className="space-y-3">
                     {drillFacility.triggers.map((t, i) => (
-                      <div key={i} className="bg-rose-950/30 border border-rose-900/40 rounded-2xl p-4">
+                      <div key={i} className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40 rounded-2xl p-4">
                         <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs font-bold text-rose-300 uppercase tracking-wider">{t.metric}</span>
+                          <span className="text-xs font-bold text-rose-800 dark:text-rose-300 uppercase tracking-wider">{t.metric}</span>
                           <span className="font-mono text-sm text-text-primary dark:text-white">{typeof t.value === 'number' ? t.value.toFixed(4) : t.value}</span>
                         </div>
                         <p className="text-xs text-text-muted dark:text-slate-400">{t.detail}</p>
-                        <div className="mt-2 text-[10px] text-rose-400/70">Threshold: {t.threshold}</div>
+                        <div className="mt-2 text-[10px] text-rose-600/70 dark:text-rose-400/70">Threshold: {t.threshold}</div>
                       </div>
                     ))}
                   </div>
@@ -535,7 +528,7 @@ export default function DistrictAdminDashboard() {
                       </div>
                       <div className="flex gap-2 items-center">
                         {f.triggers.map((t, i) => (
-                          <span key={i} className="text-[10px] bg-rose-950/50 border border-rose-900/40 text-rose-300 px-2 py-0.5 rounded-full font-bold uppercase">
+                          <span key={i} className="text-[10px] bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900/40 text-rose-800 dark:text-rose-300 px-2 py-0.5 rounded-full font-bold uppercase">
                             {t.metric}
                           </span>
                         ))}
@@ -548,7 +541,7 @@ export default function DistrictAdminDashboard() {
             ) : (
               <div className="text-center py-16">
                 <div className="text-5xl mb-4">✅</div>
-                <div id="no-flags-message" className="text-text-muted dark:text-slate-400 text-sm">No underperforming facilities in <span className="text-violet-300 font-mono">{districtCode}</span>.</div>
+                <div id="no-flags-message" className="text-text-muted dark:text-slate-400 text-sm">No underperforming facilities in <span className="text-violet-700 dark:text-violet-300 font-mono">{districtCode}</span>.</div>
               </div>
             )}
           </section>
@@ -563,7 +556,7 @@ export default function DistrictAdminDashboard() {
             </div>
 
             {actionMsg && (
-              <div id="redistribution-action-message" className={`px-4 py-3 rounded-2xl text-xs border ${actionMsg.includes('Error') ? 'bg-rose-950/20 border-rose-900/40 text-rose-300' : 'bg-emerald-950/20 border-emerald-900/40 text-emerald-300'}`}>
+              <div id="redistribution-action-message" className={`px-4 py-3 rounded-2xl text-xs border ${actionMsg.includes('Error') ? 'bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/40 text-rose-800 dark:text-rose-300' : 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/40 text-emerald-800 dark:text-emerald-300'}`}>
                 {actionMsg}
               </div>
             )}
@@ -576,9 +569,9 @@ export default function DistrictAdminDashboard() {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <span className="font-semibold text-text-primary dark:text-white">{r.facility_name}</span>
-                          <span className={`text-[10px] font-bold uppercase tracking-wider border px-2 py-0.5 rounded-full ${r.status === 'active' ? 'bg-amber-500/10 border-amber-800/40 text-amber-300' :
-                              r.status === 'approved' ? 'bg-emerald-500/10 border-emerald-800/40 text-emerald-300' :
-                                'bg-rose-500/10 border-rose-800/40 text-rose-300'
+                          <span className={`text-[10px] font-bold uppercase tracking-wider border px-2 py-0.5 rounded-full ${r.status === 'active' ? 'bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-800/40 text-amber-800 dark:text-amber-300' :
+                              r.status === 'approved' ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300' :
+                                'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-300'
                             }`}>
                             {r.status}
                           </span>
@@ -592,14 +585,14 @@ export default function DistrictAdminDashboard() {
                           <button
                             id={`approve-btn-${r.alert_id}`}
                             onClick={() => handleRedistAction(r.alert_id, 'approved')}
-                            className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-600/20 hover:bg-emerald-600/40 border border-emerald-700/40 text-emerald-300 transition"
+                            className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-600/20 hover:bg-emerald-100 dark:hover:bg-emerald-600/40 border border-emerald-200 dark:border-emerald-700/40 text-emerald-700 dark:text-emerald-300 transition"
                           >
                             Approve
                           </button>
                           <button
                             id={`reject-btn-${r.alert_id}`}
                             onClick={() => handleRedistAction(r.alert_id, 'rejected')}
-                            className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-rose-600/20 hover:bg-rose-600/40 border border-rose-700/40 text-rose-300 transition"
+                            className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-rose-50 dark:bg-rose-600/20 hover:bg-rose-100 dark:hover:bg-rose-600/40 border border-rose-200 dark:border-rose-700/40 text-rose-700 dark:text-rose-300 transition"
                           >
                             Reject
                           </button>
@@ -649,7 +642,7 @@ export default function DistrictAdminDashboard() {
                           )}
                         </td>
                         <td className="py-3.5 pr-4 text-right font-mono">
-                          <span className={f.present_today < f.sanctioned_staff ? 'text-amber-300' : 'text-emerald-300'}>
+                          <span className={f.present_today < f.sanctioned_staff ? 'text-amber-700 dark:text-amber-300' : 'text-emerald-700 dark:text-emerald-300'}>
                             {isLoading ? (
                               <span className="inline-block h-4 w-8 bg-text-muted/20 animate-pulse rounded-md" />
                             ) : (
@@ -658,7 +651,7 @@ export default function DistrictAdminDashboard() {
                           </span>
                         </td>
                         <td className="py-3.5 pr-4 text-right font-mono">
-                          <span className={f.deviation > 0 ? 'text-rose-400' : 'text-emerald-400'}>
+                          <span className={f.deviation > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}>
                             {isLoading ? (
                               <span className="inline-block h-4 w-8 bg-text-muted/20 animate-pulse rounded-md" />
                             ) : (
@@ -667,9 +660,9 @@ export default function DistrictAdminDashboard() {
                           </span>
                         </td>
                         <td className="py-3.5 text-right">
-                          <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${f.attendance_pct < 60 ? 'bg-rose-950/40 text-rose-300' :
-                              f.attendance_pct < 80 ? 'bg-amber-950/40 text-amber-300' :
-                                'bg-emerald-950/40 text-emerald-300'
+                          <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${f.attendance_pct < 60 ? 'bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300' :
+                              f.attendance_pct < 80 ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300' :
+                                'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300'
                             }`}>
                             {isLoading ? (
                               <span className="inline-block h-3.5 w-10 bg-text-muted/20 animate-pulse rounded-md align-middle" />
@@ -694,7 +687,7 @@ export default function DistrictAdminDashboard() {
           <section id="screen-fleet" className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-text-primary dark:text-white">Ambulance & Dispatch Fleet Status</h2>
-              <p className="text-text-muted dark:text-slate-400 text-sm mt-1">Live dispatch status across all facilities in <span className="text-violet-300 font-mono">{districtCode}</span>.</p>
+              <p className="text-text-muted dark:text-slate-400 text-sm mt-1">Live dispatch status across all facilities in <span className="text-violet-700 dark:text-violet-300 font-mono">{districtCode}</span>.</p>
             </div>
 
             {fleet ? (
@@ -761,7 +754,7 @@ export default function DistrictAdminDashboard() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Live vs Reference cards */}
                 <div className="bg-surface-alt dark:bg-slate-900/50 border border-glass-border dark:border-slate-800 rounded-3xl p-6 space-y-5">
-                  <h3 className="text-sm font-bold text-violet-300 uppercase tracking-wider">Live District Metrics</h3>
+                  <h3 className="text-sm font-bold text-violet-700 dark:text-violet-300 uppercase tracking-wider">Live District Metrics</h3>
                   <div className="space-y-3">
                     {[
                       { label: 'Average FSI', value: benchmarks.live_metrics.avg_fsi.toFixed(6) },
@@ -787,7 +780,7 @@ export default function DistrictAdminDashboard() {
                 <div className="space-y-6">
                   {/* Census Reference */}
                   <div className="bg-surface-alt dark:bg-slate-900/50 border border-indigo-900/40 rounded-3xl p-5 space-y-3">
-                    <h3 className="text-sm font-bold text-indigo-300 uppercase tracking-wider">Census Reference</h3>
+                    <h3 className="text-sm font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">Census Reference</h3>
                     {[
                       { label: 'Catchment Population', value: benchmarks.census_reference.catchment_population?.toLocaleString('en-IN') ?? '—' },
                       { label: 'Age < 5 Cohort', value: `${((benchmarks.census_reference.age_cohort_under_5 ?? 0) * 100).toFixed(1)}%` },
@@ -795,7 +788,7 @@ export default function DistrictAdminDashboard() {
                     ].map(row => (
                       <div key={row.label} className="flex justify-between text-xs">
                         <span className="text-slate-500">{row.label}</span>
-                        <span id={`bm-census-${row.label.replace(/\s+/g, '-').toLowerCase()}`} className="font-mono text-indigo-300">
+                        <span id={`bm-census-${row.label.replace(/\s+/g, '-').toLowerCase()}`} className="font-mono text-indigo-700 dark:text-indigo-300">
                           {isLoading ? (
                             <span className="inline-block h-3.5 w-16 bg-text-muted/20 animate-pulse rounded-md" />
                           ) : (
@@ -828,7 +821,7 @@ export default function DistrictAdminDashboard() {
 
                   {/* data.gov.in comparison */}
                   <div className="bg-surface-alt dark:bg-slate-900/50 border border-violet-900/40 rounded-3xl p-5 space-y-3">
-                    <h3 className="text-sm font-bold text-violet-300 uppercase tracking-wider">data.gov.in Comparison</h3>
+                    <h3 className="text-sm font-bold text-violet-700 dark:text-violet-300 uppercase tracking-wider">data.gov.in Comparison</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Benchmark Staff Count</span>
@@ -850,7 +843,7 @@ export default function DistrictAdminDashboard() {
                           )}
                         </span>
                       </div>
-                      <div className={`flex justify-between text-xs font-bold ${benchmarks.comparison.staff_vs_benchmark.gap < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                      <div className={`flex justify-between text-xs font-bold ${benchmarks.comparison.staff_vs_benchmark.gap < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                         <span>Gap vs Benchmark</span>
                         <span id="bm-staff-gap">
                           {isLoading ? (
