@@ -653,7 +653,7 @@ export default function PHCInchargeDashboard() {
 
       </main>
       
-      <footer className="w-full text-center py-6 text-[10px] text-text-muted border-t border-glass-border mt-12 bg-surface">
+      <footer className="w-full text-center py-8 text-xs text-slate-600 border-t border-glass-border dark:border-slate-900 mt-12 z-10" suppressHydrationWarning>
         PulseDesk © {new Date().getFullYear()} • Made by Team CodeCraft
       </footer>
     </div>

@@ -745,6 +745,10 @@ export default function DistrictAdminDashboard() {
           </section>
         )}
       </main>
+
+      <footer className="w-full text-center py-8 text-xs text-slate-600 border-t border-glass-border dark:border-slate-900 mt-12 z-10" suppressHydrationWarning>
+        PulseDesk District Admin © {new Date().getFullYear()} • Made by Team CodeCraft
+      </footer>
     </div>
   );
 }
