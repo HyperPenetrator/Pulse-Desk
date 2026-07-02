@@ -138,8 +138,8 @@ export default function Home() {
 
       {/* Main Content */}
       <main className={`relative flex-1 w-full mx-auto px-6 py-8 z-10 transition duration-700 ease-in-out ${formSubmitted
-          ? 'max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-8 items-start'
-          : 'max-w-2xl flex flex-col items-center'
+        ? 'max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-8 items-start'
+        : 'max-w-2xl flex flex-col items-center'
         }`}>
 
         {/* Form Column */}
@@ -311,8 +311,8 @@ export default function Home() {
               type="submit"
               disabled={loading}
               className={`w-full py-4 rounded-2xl font-bold text-sm tracking-wide uppercase transition duration-200 ${loading
-                  ? 'bg-surface dark:bg-slate-800 text-text-muted dark:text-slate-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 shadow-lg shadow-emerald-500/10'
+                ? 'bg-surface dark:bg-slate-800 text-text-muted dark:text-slate-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 shadow-lg shadow-emerald-500/10'
                 }`}
             >
               {loading ? 'Processing Triage...' : 'Submit Emergency Intake'}

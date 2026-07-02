@@ -24,12 +24,12 @@ const KNOWN_DISTRICTS = ['KA-BNG', 'MH-MUM'];
 type Screen = 'fsi' | 'underperforming' | 'redistribution' | 'attendance' | 'fleet' | 'benchmarks';
 
 const SCREENS: { id: Screen; label: string; icon: string }[] = [
-  { id: 'fsi',            label: 'FSI Heatmap',      icon: '🌡️' },
-  { id: 'underperforming',label: 'Flags',             icon: '⚠️' },
-  { id: 'redistribution', label: 'Redistribution',    icon: '🔄' },
-  { id: 'attendance',     label: 'Attendance',        icon: '📋' },
-  { id: 'fleet',          label: 'Fleet Status',      icon: '🚑' },
-  { id: 'benchmarks',     label: 'Benchmarks',        icon: '📊' },
+  { id: 'fsi', label: 'FSI Heatmap', icon: '🌡️' },
+  { id: 'underperforming', label: 'Flags', icon: '⚠️' },
+  { id: 'redistribution', label: 'Redistribution', icon: '🔄' },
+  { id: 'attendance', label: 'Attendance', icon: '📋' },
+  { id: 'fleet', label: 'Fleet Status', icon: '🚑' },
+  { id: 'benchmarks', label: 'Benchmarks', icon: '📊' },
 ];
 
 // ── FSI colour helper ─────────────────────────────────────────────────────────
@@ -118,12 +118,12 @@ export default function DistrictAdminDashboard() {
 
       if (fsiR.status === 401 || fsiR.status === 403) { handleLogout(); return; }
 
-      if (fsiR.ok)  setFsiData(await fsiR.json());
-      if (upR.ok)   { const d = await upR.json(); setUnderperforming(d.underperforming || []); }
-      if (rrR.ok)   setRedistRequests(await rrR.json());
-      if (attR.ok)  { const d = await attR.json(); setAttendance(d.facilities || []); }
-      if (flR.ok)   setFleet(await flR.json());
-      if (bmR.ok)   setBenchmarks(await bmR.json());
+      if (fsiR.ok) setFsiData(await fsiR.json());
+      if (upR.ok) { const d = await upR.json(); setUnderperforming(d.underperforming || []); }
+      if (rrR.ok) setRedistRequests(await rrR.json());
+      if (attR.ok) { const d = await attR.json(); setAttendance(d.facilities || []); }
+      if (flR.ok) setFleet(await flR.json());
+      if (bmR.ok) setBenchmarks(await bmR.json());
       setError(null);
     } catch (err: any) {
       setError(err.message);
@@ -269,11 +269,10 @@ export default function DistrictAdminDashboard() {
             key={s.id}
             id={`tab-${s.id}`}
             onClick={() => setActiveScreen(s.id)}
-            className={`flex items-center gap-1.5 px-4 py-3 text-xs font-semibold uppercase tracking-wider whitespace-nowrap border-b-2 transition-all duration-150 ${
-              activeScreen === s.id
+            className={`flex items-center gap-1.5 px-4 py-3 text-xs font-semibold uppercase tracking-wider whitespace-nowrap border-b-2 transition-all duration-150 ${activeScreen === s.id
                 ? 'border-violet-500 text-violet-300'
                 : 'border-transparent text-slate-500 hover:text-text-muted dark:text-slate-300'
-            }`}
+              }`}
           >
             <span>{s.icon}</span>{s.label}
             {s.id === 'redistribution' && redistRequests.filter(r => r.status === 'active').length > 0 && (
@@ -317,7 +316,7 @@ export default function DistrictAdminDashboard() {
                         {aiState === 'applying' ? 'Applying Recommendations...' : aiState === 'applied' ? 'Recommendations Applied' : 'AI Resource Recommendations'}
                       </h3>
                     </div>
-                    
+
                     {aiState === 'active' && (
                       <>
                         <div className="text-sm text-text-muted dark:text-slate-300 space-y-2">
@@ -499,11 +498,10 @@ export default function DistrictAdminDashboard() {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <span className="font-semibold text-text-primary dark:text-white">{r.facility_name}</span>
-                          <span className={`text-[10px] font-bold uppercase tracking-wider border px-2 py-0.5 rounded-full ${
-                            r.status === 'active'   ? 'bg-amber-500/10 border-amber-800/40 text-amber-300' :
-                            r.status === 'approved' ? 'bg-emerald-500/10 border-emerald-800/40 text-emerald-300' :
-                            'bg-rose-500/10 border-rose-800/40 text-rose-300'
-                          }`}>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider border px-2 py-0.5 rounded-full ${r.status === 'active' ? 'bg-amber-500/10 border-amber-800/40 text-amber-300' :
+                              r.status === 'approved' ? 'bg-emerald-500/10 border-emerald-800/40 text-emerald-300' :
+                                'bg-rose-500/10 border-rose-800/40 text-rose-300'
+                            }`}>
                             {r.status}
                           </span>
                         </div>
@@ -577,11 +575,10 @@ export default function DistrictAdminDashboard() {
                           </span>
                         </td>
                         <td className="py-3.5 text-right">
-                          <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${
-                            f.attendance_pct < 60 ? 'bg-rose-950/40 text-rose-300' :
-                            f.attendance_pct < 80 ? 'bg-amber-950/40 text-amber-300' :
-                            'bg-emerald-950/40 text-emerald-300'
-                          }`}>
+                          <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${f.attendance_pct < 60 ? 'bg-rose-950/40 text-rose-300' :
+                              f.attendance_pct < 80 ? 'bg-amber-950/40 text-amber-300' :
+                                'bg-emerald-950/40 text-emerald-300'
+                            }`}>
                             {f.attendance_pct}%
                           </span>
                         </td>
@@ -747,7 +744,7 @@ export default function DistrictAdminDashboard() {
       </main>
 
       <footer className="w-full text-center py-8 text-xs text-slate-600 border-t border-glass-border dark:border-slate-900 mt-12 z-10" suppressHydrationWarning>
-        PulseDesk District Admin © {new Date().getFullYear()} • Made by Team CodeCraft
+        PulseDesk © {new Date().getFullYear()} • Made by Team Codecraft
       </footer>
     </div>
   );

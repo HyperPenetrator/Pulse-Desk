@@ -7,16 +7,16 @@ export default function PHCInchargeDashboard() {
   const [facilityId, setFacilityId] = useState<string | null>(null);
   const [facilities, setFacilities] = useState<any[]>([]);
   const [selectedFacility, setSelectedFacility] = useState<string>('');
-  
+
   // Dashboard data
   const [dashboardData, setDashboardData] = useState<any | null>(null);
   const [inventory, setInventory] = useState<any[]>([]);
   const [attendanceData, setAttendanceData] = useState<any | null>(null);
   const [fsiData, setFsiData] = useState<any | null>(null);
-  
+
   const [loadingData, setLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Redistribution form states
   const [redistributionReason, setRedistributionReason] = useState('');
   const [submittingRedistribution, setSubmittingRedistribution] = useState(false);
@@ -54,7 +54,7 @@ export default function PHCInchargeDashboard() {
     const fetchData = async () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        
+
         // 1. Fetch main dashboard data (reused from receptionist endpoint structure or similar)
         const dbResp = await fetch(`${backendUrl}/api/v1/receptionist/data/${facilityId}`, { headers });
         if (!dbResp.ok) {
@@ -206,7 +206,7 @@ export default function PHCInchargeDashboard() {
     return (
       <div className="min-h-screen bg-surface text-text-primary flex flex-col items-center justify-center p-6 selection:bg-brand-primary/20">
         <div className="absolute top-0 left-0 right-0 h-[400px] bg-gradient-to-b from-brand-primary/10 via-transparent to-transparent pointer-events-none" />
-        
+
         <div className="w-full max-w-md bg-glass-bg backdrop-blur-md border border-glass-border rounded-3xl p-8 shadow-glass-dark relative z-10">
           <div className="flex flex-col items-center mb-8">
             <div className="h-12 w-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 mb-4">
@@ -293,10 +293,10 @@ export default function PHCInchargeDashboard() {
       )}
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start z-10">
-        
+
         {/* LEFT COLUMN: Main In-charge operations */}
         <div className="lg:col-span-8 space-y-8">
-          
+
           {/* FSI Gauge & Attendance Grid */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
             {/* FSI GAUGE */}
@@ -305,18 +305,18 @@ export default function PHCInchargeDashboard() {
                 <h2 className="text-lg font-bold text-text-primary dark:text-white">Facility Stress Index (FSI)</h2>
                 <p className="text-text-muted dark:text-slate-400 text-xs mt-0.5">Real-time daily load vs catchment and beds capacity.</p>
               </div>
-              
+
               <div className="flex flex-col items-center justify-center py-4 space-y-3">
                 <div className="relative flex items-center justify-center">
                   <svg className="w-36 h-36 transform -rotate-90">
                     <circle cx="72" cy="72" r="60" stroke="#1e293b" strokeWidth="12" fill="transparent" />
-                    <circle 
-                      cx="72" 
-                      cy="72" 
-                      r="60" 
-                      stroke="url(#fsiGradient)" 
-                      strokeWidth="12" 
-                      fill="transparent" 
+                    <circle
+                      cx="72"
+                      cy="72"
+                      r="60"
+                      stroke="url(#fsiGradient)"
+                      strokeWidth="12"
+                      fill="transparent"
                       strokeDasharray="377"
                       strokeDashoffset={377 - (377 * Math.min(1, fsiData?.fsi_value || 0))}
                       strokeLinecap="round"
@@ -336,7 +336,7 @@ export default function PHCInchargeDashboard() {
                     <div className="text-[10px] text-text-muted dark:text-slate-400 font-bold uppercase tracking-wider mt-1">Stress Level</div>
                   </div>
                 </div>
-                
+
                 <div className="text-xs text-text-muted dark:text-slate-300 grid grid-cols-2 gap-x-6 gap-y-2 w-full pt-4 border-t border-glass-border dark:border-slate-900">
                   <div className="flex justify-between">
                     <span className="text-slate-500">Footfall today:</span>
@@ -352,9 +352,8 @@ export default function PHCInchargeDashboard() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Status:</span>
-                    <span className={`font-bold ${
-                      (fsiData?.fsi_value || 0) > 0.001 ? 'text-rose-400' : 'text-emerald-400'
-                    }`}>
+                    <span className={`font-bold ${(fsiData?.fsi_value || 0) > 0.001 ? 'text-rose-400' : 'text-emerald-400'
+                      }`}>
                       {(fsiData?.fsi_value || 0) > 0.001 ? 'High Stress' : 'Nominal'}
                     </span>
                   </div>
@@ -393,9 +392,8 @@ export default function PHCInchargeDashboard() {
                     </div>
                     <div className="bg-surface-alt dark:bg-slate-950 border border-slate-850 p-3 rounded-2xl text-center">
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Present Today</span>
-                      <span id="present-staff-count" className={`text-2xl font-extrabold mt-1 block ${
-                        attendanceData.present_count < attendanceData.sanctioned_staff ? 'text-amber-400' : 'text-emerald-400'
-                      }`}>
+                      <span id="present-staff-count" className={`text-2xl font-extrabold mt-1 block ${attendanceData.present_count < attendanceData.sanctioned_staff ? 'text-amber-400' : 'text-emerald-400'
+                        }`}>
                         {attendanceData.present_count}
                       </span>
                     </div>
@@ -409,11 +407,10 @@ export default function PHCInchargeDashboard() {
                             <div className="font-semibold text-text-primary dark:text-slate-200">{staff.name}</div>
                             <div className="text-[10px] text-slate-500 font-mono">{staff.role}</div>
                           </div>
-                          <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${
-                            staff.status === 'Present' 
-                              ? 'bg-emerald-950/30 border-emerald-900/30 text-emerald-400' 
+                          <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${staff.status === 'Present'
+                              ? 'bg-emerald-950/30 border-emerald-900/30 text-emerald-400'
                               : 'bg-rose-950/30 border-rose-900/30 text-rose-400'
-                          }`}>
+                            }`}>
                             {staff.status}
                           </span>
                         </div>
@@ -533,9 +530,8 @@ export default function PHCInchargeDashboard() {
             </form>
 
             {redistributionMessage && (
-              <div id="redistribution-status-message" className={`p-4 rounded-2xl text-xs border ${
-                redistributionMessage.includes('Error') ? 'bg-rose-950/20 border-rose-900/40 text-rose-300' : 'bg-emerald-950/20 border-emerald-900/40 text-emerald-300'
-              }`}>
+              <div id="redistribution-status-message" className={`p-4 rounded-2xl text-xs border ${redistributionMessage.includes('Error') ? 'bg-rose-950/20 border-rose-900/40 text-rose-300' : 'bg-emerald-950/20 border-emerald-900/40 text-emerald-300'
+                }`}>
                 {redistributionMessage}
               </div>
             )}
@@ -545,19 +541,19 @@ export default function PHCInchargeDashboard() {
 
         {/* RIGHT COLUMN: Live alerts & Walk-ins */}
         <div className="lg:col-span-4 space-y-8">
-          
+
           {/* Bed Availability Panel */}
           <section className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-4">
             <h2 className="text-base font-bold text-text-primary dark:text-white">Bed Availability Panel</h2>
             <p className="text-text-muted dark:text-slate-400 text-xs -mt-2">Read-only facility capacity index</p>
-            
+
             {dashboardData ? (
               <div className="bg-surface-alt dark:bg-slate-950 border border-glass-border dark:border-slate-800 rounded-2xl p-5 space-y-4">
                 <div>
                   <div className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Facility Name</div>
                   <div className="text-sm font-bold text-text-primary dark:text-white mt-0.5">{dashboardData.facility_name}</div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 pt-2 border-t border-glass-border dark:border-slate-900">
                   <div>
                     <div className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Available Beds</div>
@@ -652,9 +648,9 @@ export default function PHCInchargeDashboard() {
         </div>
 
       </main>
-      
+
       <footer className="w-full text-center py-8 text-xs text-slate-600 border-t border-glass-border dark:border-slate-900 mt-12 z-10" suppressHydrationWarning>
-        PulseDesk © {new Date().getFullYear()} • Made by Team CodeCraft
+        PulseDesk © {new Date().getFullYear()} • Made by Team Codecraft
       </footer>
     </div>
   );
