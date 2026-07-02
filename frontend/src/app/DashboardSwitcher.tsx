@@ -33,7 +33,17 @@ export default function DashboardSwitcher() {
       if (role === 'district_admin') {
         payload.district_code = identifier || 'KA-BNG';
       } else {
-        payload.facility_id = identifier || '18f2a794-147a-42d3-be0b-fe130c465d9e'; // Default mockup ID (Bangalore Central PHC)
+        if (identifier) {
+          payload.facility_id = identifier;
+        } else {
+          const facRes = await fetch(`${backendUrl}/api/v1/facilities`);
+          const facList = await facRes.json();
+          if (facList && facList.length > 0) {
+            payload.facility_id = facList[0].id;
+          } else {
+            throw new Error("No facilities found in the database. Did you run the seed script?");
+          }
+        }
       }
 
       const response = await fetch(`${backendUrl}/api/v1/auth/mock-login`, {
