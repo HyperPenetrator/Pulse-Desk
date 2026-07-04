@@ -382,7 +382,7 @@ export default function PHCInchargeDashboard() {
                     </defs>
                   </svg>
                   <div className="absolute text-center">
-                    <div id="fsi-value-display" className="text-3xl font-extrabold text-text-primary dark:text-white flex justify-center">
+                    <div id="fsi-value-display" className="text-3xl font-extrabold text-black flex justify-center">
                       {isLoading ? (
                         <span className="h-8 w-20 bg-text-muted/20 animate-pulse rounded-md" />
                       ) : (
