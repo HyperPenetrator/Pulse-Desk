@@ -15,13 +15,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Healthify",
+  title: "PulseDesk",
   description: "Smart Health AI-Driven Platform",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Healthify",
+    title: "PulseDesk",
   },
   formatDetection: {
     telephone: false,
