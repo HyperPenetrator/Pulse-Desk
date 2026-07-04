@@ -54,15 +54,28 @@ export default function ReceptionistDashboard() {
     }
   }, []);
 
+  const tokenRef = useRef<string | null>(token);
+  const facilityIdRef = useRef<string | null>(facilityId);
+  const backendUrlRef = useRef<string>(backendUrl);
+
+  useEffect(() => {
+    tokenRef.current = token;
+    facilityIdRef.current = facilityId;
+    backendUrlRef.current = backendUrl;
+  }, [token, facilityId, backendUrl]);
+
   // Poll dashboard data when logged in
   useEffect(() => {
-    if (!token || !facilityId) return;
-
     const fetchData = async () => {
+      const currentToken = tokenRef.current;
+      const currentFacilityId = facilityIdRef.current;
+      if (!currentToken || !currentFacilityId) return;
+
       try {
-        const response = await fetch(`${backendUrl}/api/v1/receptionist/data/${facilityId}`, {
+        const response = await fetch(`${backendUrlRef.current}/api/v1/receptionist/data/${currentFacilityId}`, {
+          cache: 'no-store',
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${currentToken}`,
           },
         });
         if (!response.ok) {
@@ -80,10 +93,33 @@ export default function ReceptionistDashboard() {
       }
     };
 
-    fetchData();
     const interval = setInterval(fetchData, 3000); // Poll every 3 seconds
 
     return () => clearInterval(interval);
+  }, []);
+
+  // Fetch immediately when token or facilityId becomes available/changes
+  useEffect(() => {
+    if (token && facilityId) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`${backendUrl}/api/v1/receptionist/data/${facilityId}`, {
+            cache: 'no-store',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setDashboardData(data);
+            setError(null);
+          }
+        } catch (err) {
+          // ignore error here as the polling loop will catch/set it
+        }
+      };
+      fetchData();
+    }
   }, [token, facilityId, backendUrl]);
 
   const handleLogin = async (e: React.FormEvent) => {

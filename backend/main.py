@@ -715,6 +715,52 @@ def get_attendance(facility_id: UUID, db: Session = Depends(get_db)):
     }
 
 
+class AttendanceUpdatePayload(BaseModel):
+    present: bool
+
+@app.patch(
+    "/api/v1/attendance/{facility_id}/{staff_id}",
+    dependencies=[Depends(RequireRole(["phc_incharge", "district_admin"])), Depends(validate_facility_scope)]
+)
+def patch_attendance(
+    facility_id: UUID,
+    staff_id: UUID,
+    payload: AttendanceUpdatePayload,
+    db: Session = Depends(get_db)
+):
+    # Verify staff member exists and belongs to this facility
+    staff = db.query(Staff).filter(Staff.id == staff_id, Staff.facility_id == facility_id).first()
+    if not staff:
+        raise HTTPException(status_code=404, detail="Staff member not found at this facility")
+        
+    today = datetime.utcnow().date()
+    status_str = "Present" if payload.present else "Absent"
+    
+    log = db.query(AttendanceLog).filter(
+        AttendanceLog.staff_id == staff_id,
+        AttendanceLog.date == today
+    ).first()
+    
+    if log:
+        log.status = status_str
+    else:
+        log = AttendanceLog(
+            staff_id=staff_id,
+            date=today,
+            status=status_str
+        )
+        db.add(log)
+        
+    db.commit()
+    db.refresh(log)
+    
+    return {
+        "staff_id": str(staff_id),
+        "date": today.isoformat(),
+        "status": log.status
+    }
+
+
 class RedistributionPayload(BaseModel):
     facility_id: UUID
     reason: str

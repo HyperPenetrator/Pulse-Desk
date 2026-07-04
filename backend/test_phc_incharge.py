@@ -154,3 +154,50 @@ def test_redistribution_endpoint(client, db_session):
     assert alert.facility_id == fac_id
     assert alert.description == "Severe doctor shortage due to high seasonal FSI"
     assert alert.status == "active"
+
+def test_patch_attendance_endpoint(client, db_session):
+    fac_id = uuid4()
+    facility = Facility(
+        id=fac_id,
+        name="Test Bangalore PHC",
+        type="PHC",
+        district_code="KA-BNG",
+        sanctioned_staff=3
+    )
+    db_session.add(facility)
+    
+    staff = Staff(
+        id=uuid4(),
+        facility_id=fac_id,
+        role="Doctor",
+        name="Dr. Smith"
+    )
+    db_session.add(staff)
+    db_session.commit()
+    
+    token = generate_token("phc_incharge", facility_id=str(fac_id))
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    # 1. Update to Present
+    response = client.patch(f"/api/v1/attendance/{fac_id}/{staff.id}", json={"present": True}, headers=headers)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["staff_id"] == str(staff.id)
+    assert data["status"] == "Present"
+    
+    # Verify in DB
+    today = datetime.utcnow().date()
+    log = db_session.query(AttendanceLog).filter(AttendanceLog.staff_id == staff.id, AttendanceLog.date == today).first()
+    assert log is not None
+    assert log.status == "Present"
+    
+    # 2. Update to Absent
+    response = client.patch(f"/api/v1/attendance/{fac_id}/{staff.id}", json={"present": False}, headers=headers)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "Absent"
+    
+    # Verify updated in DB
+    db_session.refresh(log)
+    assert log.status == "Absent"
+

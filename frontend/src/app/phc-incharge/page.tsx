@@ -24,6 +24,10 @@ export default function PHCInchargeDashboard() {
   const [submittingRedistribution, setSubmittingRedistribution] = useState(false);
   const [redistributionMessage, setRedistributionMessage] = useState<string | null>(null);
 
+  const derivedPresentCount = attendanceData?.attendance
+    ? attendanceData.attendance.filter((s: any) => s.status === 'Present').length
+    : 0;
+
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
   // Fetch facilities for login selector
@@ -207,6 +211,44 @@ export default function PHCInchargeDashboard() {
     }
   };
 
+  const handleToggleAttendance = async (staffId: string, newPresent: boolean) => {
+    if (!token || !facilityId || !attendanceData) return;
+
+    const previousAttendanceData = { ...attendanceData };
+
+    // Optimistically update status in state
+    const updatedAttendance = attendanceData.attendance.map((s: any) =>
+      s.staff_id === staffId ? { ...s, status: newPresent ? 'Present' : 'Absent' } : s
+    );
+
+    const newPresentCount = updatedAttendance.filter((s: any) => s.status === 'Present').length;
+
+    setAttendanceData({
+      ...attendanceData,
+      present_count: newPresentCount,
+      attendance: updatedAttendance
+    });
+
+    try {
+      const response = await fetch(`${backendUrl}/api/v1/attendance/${facilityId}/${staffId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ present: newPresent })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update attendance');
+      }
+    } catch (err) {
+      // Revert on request failure
+      setAttendanceData(previousAttendanceData);
+      alert('Error updating attendance. Restoring previous state.');
+    }
+  };
+
   if (!token) {
     return (
       <div className="min-h-screen bg-surface text-text-primary flex flex-col items-center justify-center p-6 selection:bg-brand-primary/20">
@@ -344,7 +386,7 @@ export default function PHCInchargeDashboard() {
                       {isLoading ? (
                         <span className="h-8 w-20 bg-text-muted/20 animate-pulse rounded-md" />
                       ) : (
-                        (fsiData?.fsi_value || 0).toFixed(4)
+                        Math.round(fsiData?.fsi_value || 0)
                       )}
                     </div>
                     <div className="text-[10px] text-text-muted dark:text-slate-400 font-bold uppercase tracking-wider mt-1">Stress Level</div>
@@ -402,14 +444,14 @@ export default function PHCInchargeDashboard() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: 0.05, ease: "easeOut" }}
-              className={`order-1 md:order-2 md:col-span-7 bg-glass-bg backdrop-blur-md border shadow-glass-dark rounded-3xl p-6 space-y-4 transition-colors duration-500 ${(attendanceData && attendanceData.present_count < attendanceData.sanctioned_staff) ? 'border-brand-danger/50 ring-1 ring-brand-danger/30' : 'border-glass-border'}`}
+              className={`order-1 md:order-2 md:col-span-7 bg-glass-bg backdrop-blur-md border shadow-glass-dark rounded-3xl p-6 space-y-4 transition-colors duration-500 ${(attendanceData && derivedPresentCount < attendanceData.sanctioned_staff) ? 'border-brand-danger/50 ring-1 ring-brand-danger/30' : 'border-glass-border'}`}
             >
               <div>
                 <h2 className="text-lg font-bold text-text-primary">Staff Attendance Log</h2>
                 <p className="text-text-muted text-xs mt-0.5">Sanctioned counts vs active today.</p>
               </div>
 
-              {attendanceData && attendanceData.present_count < attendanceData.sanctioned_staff && (
+              {attendanceData && derivedPresentCount < attendanceData.sanctioned_staff && (
                 <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 rounded-xl p-3 flex items-center gap-3">
                   <span className="relative flex h-3 w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
@@ -437,12 +479,12 @@ export default function PHCInchargeDashboard() {
                     </div>
                     <div className="bg-surface-alt dark:bg-slate-950 border border-slate-850 p-3 rounded-2xl text-center">
                       <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block">Present Today</span>
-                      <span id="present-staff-count" className={`text-2xl font-extrabold mt-1 block ${attendanceData.present_count < attendanceData.sanctioned_staff ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
+                      <span id="present-staff-count" className={`text-2xl font-extrabold mt-1 block ${derivedPresentCount < attendanceData.sanctioned_staff ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
                         }`}>
                         {isLoading ? (
                           <span className="inline-block h-6 w-12 bg-text-muted/20 animate-pulse rounded-md" />
                         ) : (
-                          attendanceData.present_count
+                          derivedPresentCount
                         )}
                       </span>
                     </div>
@@ -456,12 +498,18 @@ export default function PHCInchargeDashboard() {
                             <div className="font-semibold text-text-primary dark:text-slate-200">{staff.name}</div>
                             <div className="text-[10px] text-slate-500 font-mono">{staff.role}</div>
                           </div>
-                          <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${staff.status === 'Present'
-                              ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/30 text-emerald-800 dark:text-emerald-400'
-                              : 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/30 text-rose-800 dark:text-rose-400'
-                            }`}>
-                            {staff.status}
-                          </span>
+                          <button
+                            onClick={() => handleToggleAttendance(staff.staff_id, staff.status !== 'Present')}
+                            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
+                              staff.status === 'Present' ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'
+                            }`}
+                          >
+                            <span
+                              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                staff.status === 'Present' ? 'translate-x-5' : 'translate-x-0'
+                              }`}
+                            />
+                          </button>
                         </div>
                       ))
                     ) : (
@@ -533,7 +581,7 @@ export default function PHCInchargeDashboard() {
           >
             <div>
               <h2 className="text-xl font-bold text-text-primary dark:text-white">PHC Pharmacy Inventory</h2>
-              <p className="text-text-muted dark:text-slate-400 text-xs mt-0.5">Real-time stock runway compared against Dynamic Reorder Points (DRP).</p>
+              <p className="text-text-muted text-xs mt-0.5">Real-time stock runway compared against Dynamic Reorder Points (DRP).</p>
             </div>
 
             <div className="pt-2 space-y-3">
@@ -551,7 +599,7 @@ export default function PHCInchargeDashboard() {
                             style={{ width: `${pct}%` }}
                           />
                         </div>
-                        <span className="font-mono text-text-muted dark:text-slate-400 w-12 text-right">{item.current_stock}</span>
+                        <span className="font-mono text-text-muted w-12 text-right">{item.current_stock}</span>
                       </div>
                     );
                   });
@@ -566,20 +614,20 @@ export default function PHCInchargeDashboard() {
           <section className="bg-surface-alt dark:bg-slate-900/40 border border-glass-border dark:border-slate-800/80 rounded-3xl p-6 shadow-xl space-y-6">
             <div>
               <h2 className="text-xl font-bold text-text-primary dark:text-white">Resource Redistribution</h2>
-              <p className="text-text-muted dark:text-slate-400 text-xs mt-0.5">Submit an urgent request to the District Admin to transfer stock or staff due to overload.</p>
+              <p className="text-text-muted text-xs mt-0.5">Submit an urgent request to the District Admin to transfer stock or staff due to overload.</p>
             </div>
 
             <form onSubmit={handleRedistributionSubmit} className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between items-end">
-                  <label htmlFor="redistribution-reason-input" className="block text-[10px] uppercase font-bold tracking-wider text-text-muted dark:text-slate-400">
+                  <label htmlFor="redistribution-reason-input" className="block text-[10px] uppercase font-bold tracking-wider text-text-muted">
                     Reason for Redistribution Request
                   </label>
                   <button
                     type="button"
                     onClick={() => {
                       const shortages = inventory.filter(i => i.current_stock < i.drp_value).map(i => i.medicine_name).join(', ');
-                      const staffShort = attendanceData ? (attendanceData.sanctioned_staff - attendanceData.present_count) : 0;
+                      const staffShort = attendanceData ? (attendanceData.sanctioned_staff - derivedPresentCount) : 0;
                       let draft = `Urgent Redistribution Required.\n`;
                       if (shortages) draft += `- Critical Inventory Shortages: ${shortages} below DRP.\n`;
                       if (staffShort > 0) draft += `- Staffing Deficit: Operating with ${staffShort} staff member(s) short today.\n`;
